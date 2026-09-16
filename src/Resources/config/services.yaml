@@ -1,0 +1,264 @@
+# Usługi pakietu deklarowane wprost, bez automatycznego wiązania: pakiet ma
+# działać także w projektach, które wiązania nie włączają, i nie może zależeć
+# od konfiguracji cudzego katalogu usług. Zależności opcjonalne (Sylius,
+# Doctrine, pula pamięci podręcznej) idą z „@?", więc ich brak nie wywraca
+# kontenera, tylko wycisza pojedynczy check.
+services:
+    _defaults:
+        public: false
+        autowire: false
+        autoconfigure: false
+
+    # ── Stan i sekret ────────────────────────────────────────────────────
+    calmfox_watch.state:
+        class: Calmfox\WatchBundle\Core\StateStore
+        arguments: ['%calmfox_watch.state_dir%']
+
+    calmfox_watch.cache:
+        class: Calmfox\WatchBundle\Core\FileCache
+        arguments: ['%calmfox_watch.state_dir%']
+
+    calmfox_watch.secrets:
+        class: Calmfox\WatchBundle\Core\SecretManager
+        arguments: ['@calmfox_watch.state']
+
+    # Własny klient HTTP z krótkimi limitami czasu: nie chcemy zależeć od tego,
+    # czy projekt w ogóle włączył framework.http_client.
+    calmfox_watch.http_client:
+        class: Symfony\Contracts\HttpClient\HttpClientInterface
+        factory: ['Symfony\Component\HttpClient\HttpClient', 'create']
+        arguments:
+            - { timeout: 5, max_redirects: 0 }
+
+    calmfox_watch.signals:
+        class: Calmfox\WatchBundle\Signals\AdminSignals
+        arguments: ['@?sylius.repository.admin_user', '@calmfox_watch.secrets']
+
+    # Skład włączonych bundli: sylisowy odpowiednik listy aktywnych wtyczek WP.
+    # %kernel.bundles% jest parametrem kontenera, więc odczyt nic nie kosztuje.
+    calmfox_watch.package_signals:
+        class: Calmfox\WatchBundle\Signals\PackageSignals
+        arguments: ['%kernel.bundles%', '@calmfox_watch.secrets']
+
+    calmfox_watch.history:
+        class: Calmfox\WatchBundle\History\UpdateHistory
+        arguments:
+            - '@calmfox_watch.state'
+            - '%calmfox_watch.vendor_dir%'
+            - ['%calmfox_watch.platform_package%', 'php']
+
+    # ── Sekcja health ────────────────────────────────────────────────────
+    calmfox_watch.check.db:
+        class: Calmfox\WatchBundle\Check\Health\DatabaseCheck
+        arguments: ['@?doctrine.dbal.default_connection']
+        tags: [{ name: calmfox_watch.health_check, priority: 100 }]
+
+    calmfox_watch.check.disk:
+        class: Calmfox\WatchBundle\Check\Health\DiskCheck
+        arguments:
+            - '%calmfox_watch.project_dir%'
+            - '%calmfox_watch.var_dir%'
+            - '%calmfox_watch.media_dir%'
+            - '%calmfox_watch.disk_quota_gb%'
+            - '@calmfox_watch.state'
+            - '@calmfox_watch.cache'
+        tags: [{ name: calmfox_watch.health_check, priority: 90 }]
+
+    calmfox_watch.check.smtp:
+        class: Calmfox\WatchBundle\Check\Health\SmtpCheck
+        arguments: ['%calmfox_watch.mailer_dsn%', '@calmfox_watch.cache']
+        tags: [{ name: calmfox_watch.health_check, priority: 80 }]
+
+    calmfox_watch.check.messenger:
+        class: Calmfox\WatchBundle\Check\Health\MessengerCheck
+        arguments:
+            - '@?doctrine.dbal.default_connection'
+            - '%calmfox_watch.messenger_table%'
+            - '%calmfox_watch.failure_transports%'
+        tags: [{ name: calmfox_watch.health_check, priority: 70 }]
+
+    calmfox_watch.check.app_cache:
+        class: Calmfox\WatchBundle\Check\Health\AppCacheCheck
+        arguments: ['@?cache.app']
+        tags: [{ name: calmfox_watch.health_check, priority: 60 }]
+
+    calmfox_watch.check.checkout:
+        class: Calmfox\WatchBundle\Check\Health\CheckoutCheck
+        arguments:
+            - '@?sylius.repository.channel'
+            - '@?sylius.repository.payment_method'
+            - '@?sylius.repository.shipping_method'
+        tags: [{ name: calmfox_watch.health_check, priority: 50 }]
+
+    calmfox_watch.check.scheduled_tasks:
+        class: Calmfox\WatchBundle\Check\Health\ScheduledTasksCheck
+        arguments: ['@calmfox_watch.state', '%calmfox_watch.heartbeat_interval%']
+        tags: [{ name: calmfox_watch.health_check, priority: 40 }]
+
+    calmfox_watch.check.elasticsearch:
+        class: Calmfox\WatchBundle\Check\Health\ElasticsearchCheck
+        arguments: ['%calmfox_watch.elasticsearch_url%', '@calmfox_watch.http_client', '@calmfox_watch.cache']
+        tags: [{ name: calmfox_watch.health_check, priority: 30 }]
+
+    # ── Sekcja security ──────────────────────────────────────────────────
+    calmfox_watch.check.admin_count:
+        class: Calmfox\WatchBundle\Check\Security\AdminCountCheck
+        arguments: ['@calmfox_watch.signals']
+        tags: [{ name: calmfox_watch.security_check, priority: 110 }]
+
+    calmfox_watch.check.admin_login:
+        class: Calmfox\WatchBundle\Check\Security\AdminLoginCheck
+        arguments: ['@?sylius.repository.admin_user']
+        tags: [{ name: calmfox_watch.security_check, priority: 100 }]
+
+    calmfox_watch.check.app_env:
+        class: Calmfox\WatchBundle\Check\Security\AppEnvCheck
+        arguments: ['%kernel.environment%', '%kernel.debug%']
+        tags: [{ name: calmfox_watch.security_check, priority: 90 }]
+
+    calmfox_watch.check.debug_display:
+        class: Calmfox\WatchBundle\Check\Security\DebugDisplayCheck
+        arguments: ['%kernel.bundles%', '@?router']
+        tags: [{ name: calmfox_watch.security_check, priority: 80 }]
+
+    calmfox_watch.check.https:
+        class: Calmfox\WatchBundle\Check\Security\HttpsCheck
+        arguments: ['%calmfox_watch.site_url%', '@?request_stack', '@?router.request_context']
+        tags: [{ name: calmfox_watch.security_check, priority: 70 }]
+
+    calmfox_watch.check.php_version:
+        class: Calmfox\WatchBundle\Check\Security\PhpVersionCheck
+        tags: [{ name: calmfox_watch.security_check, priority: 60 }]
+
+    calmfox_watch.check.config_perms:
+        class: Calmfox\WatchBundle\Check\Security\ConfigPermsCheck
+        arguments: ['%calmfox_watch.project_dir%']
+        tags: [{ name: calmfox_watch.security_check, priority: 50 }]
+
+    calmfox_watch.check.dir_perms:
+        class: Calmfox\WatchBundle\Check\Security\DirPermsCheck
+        arguments: ['%calmfox_watch.var_dir%', '%calmfox_watch.media_dir%']
+        tags: [{ name: calmfox_watch.security_check, priority: 40 }]
+
+    calmfox_watch.check.app_secret:
+        class: Calmfox\WatchBundle\Check\Security\AppSecretCheck
+        arguments: ['%kernel.secret%']
+        tags: [{ name: calmfox_watch.security_check, priority: 30 }]
+
+    calmfox_watch.check.dev_packages:
+        class: Calmfox\WatchBundle\Check\Security\DevPackagesCheck
+        arguments: ['%calmfox_watch.vendor_dir%', '%kernel.environment%']
+        tags: [{ name: calmfox_watch.security_check, priority: 20 }]
+
+    calmfox_watch.check.pending_updates:
+        class: Calmfox\WatchBundle\Check\Security\PendingUpdatesCheck
+        arguments: ['@calmfox_watch.state']
+        tags: [{ name: calmfox_watch.security_check, priority: 10 }]
+
+    # ── Składanie odpowiedzi ─────────────────────────────────────────────
+    calmfox_watch.runner.health:
+        class: Calmfox\WatchBundle\Check\CheckRunner
+        arguments:
+            - !tagged_iterator calmfox_watch.health_check
+            - '@?logger'
+
+    calmfox_watch.runner.security:
+        class: Calmfox\WatchBundle\Check\CheckRunner
+        arguments:
+            - !tagged_iterator calmfox_watch.security_check
+            - '@?logger'
+
+    calmfox_watch.payloads:
+        class: Calmfox\WatchBundle\Payload\PayloadProvider
+        arguments:
+            - '@calmfox_watch.runner.health'
+            - '@calmfox_watch.runner.security'
+            - '@calmfox_watch.signals'
+            - '@calmfox_watch.package_signals'
+            - '@calmfox_watch.history'
+            - '@calmfox_watch.state'
+            - '@calmfox_watch.cache'
+            - '%calmfox_watch.vendor_dir%'
+            - '%calmfox_watch.platform_package%'
+
+    calmfox_watch.hub:
+        class: Calmfox\WatchBundle\Hub\HubClient
+        arguments:
+            - '@calmfox_watch.http_client'
+            - '@calmfox_watch.secrets'
+            - '@calmfox_watch.state'
+            - '@router'
+            - '%calmfox_watch.api_url%'
+            - '%calmfox_watch.site_url%'
+
+    # ── Trasy i ekran w panelu ───────────────────────────────────────────
+    Calmfox\WatchBundle\Controller\HealthController:
+        public: true
+        arguments: ['@calmfox_watch.secrets', '@calmfox_watch.payloads']
+
+    Calmfox\WatchBundle\Controller\AdminController:
+        public: true
+        arguments:
+            - '@twig'
+            - '@router'
+            - '@security.csrf.token_manager'
+            - '@security.authorization_checker'
+            - '@calmfox_watch.hub'
+            - '@calmfox_watch.payloads'
+            - '@calmfox_watch.secrets'
+            - '@calmfox_watch.state'
+            - '@calmfox_watch.history'
+            - '%calmfox_watch.admin_layout%'
+
+    calmfox_watch.menu_listener:
+        class: Calmfox\WatchBundle\Menu\AdminMenuListener
+        arguments: ['%kernel.bundles%']
+        tags:
+            - { name: kernel.event_listener, event: sylius.menu.admin.main, method: __invoke }
+
+    # ── Polecenia ────────────────────────────────────────────────────────
+    calmfox_watch.command.status:
+        class: Calmfox\WatchBundle\Command\StatusCommand
+        arguments: ['@calmfox_watch.state', '@calmfox_watch.secrets', '@calmfox_watch.hub', '@calmfox_watch.payloads']
+        tags: ['console.command']
+
+    calmfox_watch.command.register:
+        class: Calmfox\WatchBundle\Command\RegisterCommand
+        arguments: ['@calmfox_watch.hub']
+        tags: ['console.command']
+
+    calmfox_watch.command.pair:
+        class: Calmfox\WatchBundle\Command\PairCommand
+        arguments: ['@calmfox_watch.hub']
+        tags: ['console.command']
+
+    calmfox_watch.command.disconnect:
+        class: Calmfox\WatchBundle\Command\DisconnectCommand
+        arguments: ['@calmfox_watch.hub']
+        tags: ['console.command']
+
+    calmfox_watch.command.heartbeat:
+        class: Calmfox\WatchBundle\Command\HeartbeatCommand
+        arguments: ['@calmfox_watch.state']
+        tags: ['console.command']
+
+    calmfox_watch.command.health:
+        class: Calmfox\WatchBundle\Command\HealthCommand
+        arguments: ['@calmfox_watch.payloads']
+        tags: ['console.command']
+
+    calmfox_watch.command.updates:
+        class: Calmfox\WatchBundle\Command\UpdatesCommand
+        arguments:
+            - '@calmfox_watch.state'
+            - '@calmfox_watch.history'
+            - '@calmfox_watch.payloads'
+            - '%calmfox_watch.project_dir%'
+            - '%calmfox_watch.composer_binary%'
+        tags: ['console.command']
+
+    # Aliasy dla projektów, które wolą wstrzykiwać po typie.
+    Calmfox\WatchBundle\Core\StateStore: '@calmfox_watch.state'
+    Calmfox\WatchBundle\Core\SecretManager: '@calmfox_watch.secrets'
+    Calmfox\WatchBundle\Payload\PayloadProvider: '@calmfox_watch.payloads'
+    Calmfox\WatchBundle\Hub\HubClient: '@calmfox_watch.hub'

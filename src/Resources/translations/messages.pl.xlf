@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+    <file source-language="pl" target-language="pl" datatype="plaintext" original="calmfox-watch">
+        <body>
+            <trans-unit id="cfx.menu"><source>calmfox_watch.menu.admin</source><target>Calmfox Watch</target></trans-unit>
+            <trans-unit id="cfx.version"><source>calmfox_watch.admin.version</source><target>wersja %version%</target></trans-unit>
+            <trans-unit id="cfx.lead"><source>calmfox_watch.admin.lead</source><target>Monitoring wnętrza sklepu: dostępność usług (baza danych, poczta, dysk, kolejki, pamięć podręczna), warunki złożenia zamówienia, podstawowe zasady bezpieczeństwa i historia zmian wersji. Wyniki znajdziesz w panelu Calmfox Watch.</target></trans-unit>
+            <trans-unit id="cfx.loopback"><source>calmfox_watch.admin.loopback_warning</source><target>Sprawdzenie wykonane z serwera nie dociera do adresu kontrolnego (%error%). Jeżeli połączenie się nie powiedzie, sprawdź reguły dostępu w security.yaml oraz zaporę sieciową.</target></trans-unit>
+            <trans-unit id="cfx.free.h"><source>calmfox_watch.admin.free_heading</source><target>Nie mam konta, załóż pakiet Free</target></trans-unit>
+            <trans-unit id="cfx.free.i"><source>calmfox_watch.admin.free_intro</source><target>Konto zakładamy od razu: monitoring dostępności sklepu, certyfikatu SSL i stanu usług. Bez hasła, logowanie linkiem wysyłanym na adres e-mail.</target></trans-unit>
+            <trans-unit id="cfx.free.e"><source>calmfox_watch.admin.email_label</source><target>Adres e-mail właściciela</target></trans-unit>
+            <trans-unit id="cfx.free.c"><source>calmfox_watch.admin.consent_label</source><target>Zgadzam się na przekazanie adresu e-mail i domeny sklepu do Calmfox w celu założenia konta monitoringu.</target></trans-unit>
+            <trans-unit id="cfx.free.s"><source>calmfox_watch.admin.free_submit</source><target>Aktywuj pakiet Free</target></trans-unit>
+            <trans-unit id="cfx.conn.h2"><source>calmfox_watch.admin.connect_heading</source><target>Mam już konto, połącz przez panel</target></trans-unit>
+            <trans-unit id="cfx.conn.i"><source>calmfox_watch.admin.connect_intro</source><target>Przejdziesz na %panel%, zalogujesz się albo założysz konto, wybierzesz organizację, a my wrócimy tutaj z kluczem i połączymy sklep. Sklep nie musi wcześniej istnieć w panelu.</target></trans-unit>
+            <trans-unit id="cfx.conn.s2"><source>calmfox_watch.admin.connect_submit</source><target>Połącz przez %panel%</target></trans-unit>
+            <trans-unit id="cfx.conn.u"><source>calmfox_watch.admin.connect_unavailable</source><target>Ten ekran stoi pod innym adresem niż domena sklepu zgłaszana monitoringowi (%domain%), więc panel odrzuciłby powrót z kluczem. Zostaje połączenie kluczem instalacyjnym.</target></trans-unit>
+            <trans-unit id="cfx.pair.h"><source>calmfox_watch.admin.pair_heading</source><target>Wolisz wkleić klucz ręcznie?</target></trans-unit>
+            <trans-unit id="cfx.pair.i"><source>calmfox_watch.admin.pair_intro</source><target>Klucz instalacyjny znajdziesz na ekranie Integracje w panelu Calmfox Watch, przy stronie tego sklepu.</target></trans-unit>
+            <trans-unit id="cfx.pair.t"><source>calmfox_watch.admin.token_label</source><target>Klucz instalacyjny</target></trans-unit>
+            <trans-unit id="cfx.pair.s"><source>calmfox_watch.admin.pair_submit</source><target>Połącz kluczem</target></trans-unit>
+            <trans-unit id="cfx.conn.h"><source>calmfox_watch.admin.connected_heading</source><target>Połączono z Calmfox Watch</target></trans-unit>
+            <trans-unit id="cfx.conn.s"><source>calmfox_watch.admin.connected_summary</source><target>Sklep %domain%, pakiet %plan%.</target></trans-unit>
+            <trans-unit id="cfx.conn.p"><source>calmfox_watch.admin.last_poll</source><target>Ostatnie odpytanie monitoringu: %at%.</target></trans-unit>
+            <trans-unit id="cfx.conn.n"><source>calmfox_watch.admin.never_polled</source><target>Monitoring jeszcze nie odpytał adresu kontrolnego, pierwsze sprawdzenie w ciągu kilku minut.</target></trans-unit>
+            <trans-unit id="cfx.conn.o"><source>calmfox_watch.admin.open_panel</source><target>Otwórz ten sklep w panelu</target></trans-unit>
+            <trans-unit id="cfx.rot"><source>calmfox_watch.admin.rotate</source><target>Wymień klucz</target></trans-unit>
+            <trans-unit id="cfx.rot.c"><source>calmfox_watch.admin.rotate_confirm</source><target>Wymienić klucz zabezpieczający adres kontrolny? Monitoring zostanie przełączony na nowy adres.</target></trans-unit>
+            <trans-unit id="cfx.dis"><source>calmfox_watch.admin.disconnect</source><target>Rozłącz</target></trans-unit>
+            <trans-unit id="cfx.dis.c"><source>calmfox_watch.admin.disconnect_confirm</source><target>Zakończyć monitoring wnętrza sklepu? Sprawdzenia w panelu zostaną wstrzymane.</target></trans-unit>
+            <trans-unit id="cfx.url"><source>calmfox_watch.admin.health_url_label</source><target>Adres kontrolny</target></trans-unit>
+            <trans-unit id="cfx.url.h"><source>calmfox_watch.admin.health_url_hint</source><target>Ten adres odpytuje monitoring. Klucz w adresie jest jedynym zabezpieczeniem, więc nie publikuj go i nie wklejaj do zgłoszeń.</target></trans-unit>
+            <trans-unit id="cfx.h.health"><source>calmfox_watch.admin.health_heading</source><target>Stan usług</target></trans-unit>
+            <trans-unit id="cfx.h.sec"><source>calmfox_watch.admin.security_heading</source><target>Bezpieczeństwo</target></trans-unit>
+            <trans-unit id="cfx.h.empty"><source>calmfox_watch.admin.checks_empty</source><target>Brak sprawdzeń do pokazania.</target></trans-unit>
+            <trans-unit id="cfx.fix.l"><source>calmfox_watch.admin.fix_label</source><target>Jak naprawić</target></trans-unit>
+            <trans-unit id="cfx.fix.n"><source>calmfox_watch.admin.fix_command_note</source><target>Przykład do wykonania na serwerze, w katalogu sklepu. Sprawdź go u siebie przed użyciem.</target></trans-unit>
+            <trans-unit id="cfx.q.l"><source>calmfox_watch.admin.quota_label</source><target>Limit dysku na koncie hostingowym (GB)</target></trans-unit>
+            <trans-unit id="cfx.q.h"><source>calmfox_watch.admin.quota_hint</source><target>Znajdziesz go w panelu hostingu albo w umowie. Zostaw puste, jeżeli nie wiesz: wtedy pokazujemy tylko rozmiar sklepu, bez zgadywania.</target></trans-unit>
+            <trans-unit id="cfx.q.s"><source>calmfox_watch.admin.quota_submit</source><target>Zapisz limit</target></trans-unit>
+            <trans-unit id="cfx.hist.h"><source>calmfox_watch.admin.history_heading</source><target>Historia zmian wersji</target></trans-unit>
+            <trans-unit id="cfx.hist.n"><source>calmfox_watch.admin.history_note</source><target>Zbierana od instalacji pakietu przez porównywanie spisu pakietów. Znacznik czasu to moment wykrycia zmiany, nie moment wdrożenia.</target></trans-unit>
+            <trans-unit id="cfx.hist.e"><source>calmfox_watch.admin.history_empty</source><target>Brak wpisów. Pierwszy pojawi się po najbliższym wdrożeniu.</target></trans-unit>
+            <trans-unit id="cfx.st.ok"><source>calmfox_watch.admin.status_ok</source><target>OK</target></trans-unit>
+            <trans-unit id="cfx.st.warn"><source>calmfox_watch.admin.status_warn</source><target>uwaga</target></trans-unit>
+            <trans-unit id="cfx.st.fail"><source>calmfox_watch.admin.status_fail</source><target>awaria</target></trans-unit>
+            <trans-unit id="cfx.k.core"><source>calmfox_watch.admin.kind_core</source><target>platforma</target></trans-unit>
+            <trans-unit id="cfx.k.plugin"><source>calmfox_watch.admin.kind_plugin</source><target>pakiet</target></trans-unit>
+            <trans-unit id="cfx.w.h"><source>calmfox_watch.widget.heading</source><target>Calmfox Watch: kondycja sklepu</target></trans-unit>
+            <trans-unit id="cfx.w.nc"><source>calmfox_watch.widget.not_connected</source><target>Monitoring wnętrza sklepu nie jest jeszcze połączony z panelem. Sprawdzenia działają lokalnie, ale nikt o nich nie wie poza tym ekranem.</target></trans-unit>
+            <trans-unit id="cfx.w.c"><source>calmfox_watch.widget.counts</source><target>Sprawdzenia: %ok% w porządku, %warn% z ostrzeżeniem, %fail% z awarią.</target></trans-unit>
+            <trans-unit id="cfx.w.p"><source>calmfox_watch.widget.last_poll</source><target>Ostatnie odpytanie monitoringu: %at%.</target></trans-unit>
+            <trans-unit id="cfx.w.a"><source>calmfox_watch.widget.all_good</source><target>Nic nie wymaga uwagi.</target></trans-unit>
+            <trans-unit id="cfx.w.m"><source>calmfox_watch.widget.more</source><target>Dalszych spraw do przejrzenia: %count%.</target></trans-unit>
+            <trans-unit id="cfx.w.o"><source>calmfox_watch.widget.open</source><target>Otwórz Calmfox Watch</target></trans-unit>
+            <trans-unit id="cfx.menu.o"><source>calmfox_watch.menu.overview</source><target>Kondycja sklepu</target></trans-unit>
+            <trans-unit id="cfx.plan.fh"><source>calmfox_watch.admin.plan_free_heading</source><target>Pakiet Free, co dokłada wyższy próg</target></trans-unit>
+            <trans-unit id="cfx.plan.fi"><source>calmfox_watch.admin.plan_free_intro</source><target>Na Free pilnujemy dostępności sklepu, certyfikatu i stanu usług. Wyższe pakiety dokładają to, czego Free nie obejmuje:</target></trans-unit>
+            <trans-unit id="cfx.plan.i1"><source>calmfox_watch.admin.plan_item_1</source><target>sondy co 30 do 60 sekund zamiast co 5 minut, awarię widać od razu, nie po kwadransie</target></trans-unit>
+            <trans-unit id="cfx.plan.i2"><source>calmfox_watch.admin.plan_item_2</source><target>przegląd podstron: urwane treści, błędy 404 i zepsute odnośniki, zanim zauważy je klient</target></trans-unit>
+            <trans-unit id="cfx.plan.i3"><source>calmfox_watch.admin.plan_item_3</source><target>monitoring wybranych podstron i ścieżki zakupowej, nie tylko strony głównej</target></trans-unit>
+            <trans-unit id="cfx.plan.i4"><source>calmfox_watch.admin.plan_item_4</source><target>powiadomienia SMS-em, w komunikatorze i w aplikacji, bez miesięcznego limitu</target></trans-unit>
+            <trans-unit id="cfx.plan.i5"><source>calmfox_watch.admin.plan_item_5</source><target>raporty okresowe i dłuższa historia zdarzeń</target></trans-unit>
+            <trans-unit id="cfx.plan.fc"><source>calmfox_watch.admin.plan_free_cta</source><target>Zobacz pakiety dla tego sklepu</target></trans-unit>
+            <trans-unit id="cfx.plan.fn"><source>calmfox_watch.admin.plan_free_note</source><target>Pakiet kupujesz w panelu, kartą, osobno dla każdej strony. Sklep może iść wyżej, a strona wizytówka zostać na Free.</target></trans-unit>
+            <trans-unit id="cfx.plan.ph"><source>calmfox_watch.admin.plan_paid_heading</source><target>Pakiet i płatności</target></trans-unit>
+            <trans-unit id="cfx.plan.pt"><source>calmfox_watch.admin.plan_paid_text</source><target>Ten sklep jest w pakiecie %plan% (stan z chwili połączenia, bieżący pakiet i płatności zobaczysz w panelu).</target></trans-unit>
+            <trans-unit id="cfx.plan.pc"><source>calmfox_watch.admin.plan_paid_cta</source><target>Zarządzaj pakietem i płatnościami</target></trans-unit>
+            <trans-unit id="cfx.w.par"><source>calmfox_watch.widget.params</source><target>Parametry monitoringu w tym sklepie:</target></trans-unit>
+            <trans-unit id="cfx.w.fn"><source>calmfox_watch.widget.free_note</source><target>Sklep jest w pakiecie Free: sprawdzenia strony głównej i kontrola certyfikatu. Wyższy próg dokłada częstsze sondy, przegląd podstron i powiadomienia bez limitu.</target></trans-unit>
+            <trans-unit id="cfx.w.pl"><source>calmfox_watch.widget.plans</source><target>Zobacz pakiety</target></trans-unit>
+        </body>
+    </file>
+</xliff>

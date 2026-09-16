@@ -1,0 +1,52 @@
+# Adres kontrolny MUSI być publiczny (model pull huba: to monitoring nas odpytuje,
+# nie odwrotnie). Autoryzacją jest sekret w parametrze `key`, nie sesja.
+calmfox_watch_health:
+    path: /calmfox-watch/health
+    controller: Calmfox\WatchBundle\Controller\HealthController
+    methods: [GET]
+
+# Ekran w panelu administracyjnym. Prefiks bierze się z parametru pakietu,
+# bo Sylius pozwala zmienić adres panelu (sylius_admin_path).
+calmfox_watch_admin:
+    path: /%calmfox_watch.admin_path%/calmfox-watch
+    controller: Calmfox\WatchBundle\Controller\AdminController::index
+    methods: [GET]
+
+# Łączenie przez panel: wyjście do watch.calmfox.net i powrót z kluczem na
+# adres ekranu (obsługiwany przez akcję index, bo powrót jest zwykłym GET-em).
+calmfox_watch_admin_connect:
+    path: /%calmfox_watch.admin_path%/calmfox-watch/connect
+    controller: Calmfox\WatchBundle\Controller\AdminController::connect
+    methods: [POST]
+
+# Kafelek na pulpicie panelu. Renderowany podzapytaniem z szablonu wpiętego
+# w pulpit, więc musi mieć własny adres, ale nie jest ekranem do odwiedzania.
+calmfox_watch_admin_widget:
+    path: /%calmfox_watch.admin_path%/calmfox-watch/widget
+    controller: Calmfox\WatchBundle\Controller\AdminController::widget
+    methods: [GET]
+
+calmfox_watch_admin_register:
+    path: /%calmfox_watch.admin_path%/calmfox-watch/register
+    controller: Calmfox\WatchBundle\Controller\AdminController::register
+    methods: [POST]
+
+calmfox_watch_admin_pair:
+    path: /%calmfox_watch.admin_path%/calmfox-watch/pair
+    controller: Calmfox\WatchBundle\Controller\AdminController::pair
+    methods: [POST]
+
+calmfox_watch_admin_rotate:
+    path: /%calmfox_watch.admin_path%/calmfox-watch/rotate
+    controller: Calmfox\WatchBundle\Controller\AdminController::rotate
+    methods: [POST]
+
+calmfox_watch_admin_quota:
+    path: /%calmfox_watch.admin_path%/calmfox-watch/quota
+    controller: Calmfox\WatchBundle\Controller\AdminController::quota
+    methods: [POST]
+
+calmfox_watch_admin_disconnect:
+    path: /%calmfox_watch.admin_path%/calmfox-watch/disconnect
+    controller: Calmfox\WatchBundle\Controller\AdminController::disconnect
+    methods: [POST]

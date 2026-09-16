@@ -1,0 +1,135 @@
+{
+    "schema": 1,
+    "plugin": "1.0.0",
+    "status": "warn",
+    "checks": [
+        {
+            "id": "admin_count",
+            "status": "ok",
+            "label": "Liczba administratorów",
+            "detail": "Włączonych kont administracyjnych: 3.",
+            "fix": null,
+            "command": null,
+            "ms": null
+        },
+        {
+            "id": "admin_login",
+            "status": "ok",
+            "label": "Konta o domyślnym loginie",
+            "detail": "Brak kont o domyślnych loginach.",
+            "fix": null,
+            "command": null,
+            "ms": null
+        },
+        {
+            "id": "app_env",
+            "status": "ok",
+            "label": "Tryb pracy aplikacji",
+            "detail": "Tryb produkcyjny, bez trybu diagnostycznego.",
+            "fix": null,
+            "command": null,
+            "ms": null
+        },
+        {
+            "id": "debug_display",
+            "status": "ok",
+            "label": "Ujawnianie szczegółów błędów",
+            "detail": "Błędy nie są wyświetlane odwiedzającym, profiler niedostępny.",
+            "fix": null,
+            "command": null,
+            "ms": null
+        },
+        {
+            "id": "https",
+            "status": "ok",
+            "label": "Szyfrowanie HTTPS",
+            "detail": null,
+            "fix": null,
+            "command": null,
+            "ms": null
+        },
+        {
+            "id": "php_version",
+            "status": "warn",
+            "label": "Wersja PHP",
+            "detail": "PHP 8.2.20 dostaje już tylko poprawki bezpieczeństwa. Zaplanuj przejście wyżej.",
+            "fix": null,
+            "command": null,
+            "ms": null
+        },
+        {
+            "id": "config_perms",
+            "status": "ok",
+            "label": "Uprawnienia plików konfiguracji",
+            "detail": "Sprawdzone pliki (2) nie są zapisywalne dla innych.",
+            "fix": null,
+            "command": null,
+            "ms": null
+        },
+        {
+            "id": "dir_perms",
+            "status": "ok",
+            "label": "Uprawnienia katalogów",
+            "detail": "Katalogi zapisywalne wyłącznie dla właściciela.",
+            "fix": null,
+            "command": null,
+            "ms": null
+        },
+        {
+            "id": "app_secret",
+            "status": "ok",
+            "label": "Klucz aplikacji (APP_SECRET)",
+            "detail": "Klucz aplikacji jest własny i odpowiednio długi.",
+            "fix": null,
+            "command": null,
+            "ms": null
+        },
+        {
+            "id": "dev_packages",
+            "status": "warn",
+            "label": "Pakiety deweloperskie",
+            "detail": "W wydaniu produkcyjnym są pakiety deweloperskie: symfony/web-profiler-bundle. Wdrażaj poleceniem composer install --no-dev.",
+            "fix": null,
+            "command": null,
+            "ms": null
+        },
+        {
+            "id": "pending_updates",
+            "status": "ok",
+            "label": "Zaległe aktualizacje",
+            "detail": "Pakietów do aktualizacji: 6.",
+            "fix": null,
+            "command": null,
+            "ms": null
+        }
+    ],
+    "history": [
+        {
+            "kind": "plugin",
+            "name": "sylius/paypal-plugin",
+            "from": "2.0.1",
+            "to": "2.0.2",
+            "at": "2026-08-18T21:35:00+00:00",
+            "mode": "manual",
+            "by": null
+        },
+        {
+            "kind": "core",
+            "name": "sylius/sylius",
+            "from": "1.13.1",
+            "to": "1.13.2",
+            "at": "2026-08-18T21:35:00+00:00",
+            "mode": "manual",
+            "by": null
+        },
+        {
+            "kind": "core",
+            "name": "PHP",
+            "from": "8.1.29",
+            "to": "8.2.20",
+            "at": "2026-06-02T04:11:00+00:00",
+            "mode": "manual",
+            "by": null
+        }
+    ]
+}

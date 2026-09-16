@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Rdzeń pakietu (src/Core) jest świadomie wolny od Symfony i Syliusa, więc testy
+    nie potrzebują kontenera ani bazy: wystarczy autoloader PSR-4 z tests/bootstrap.php.
+    Uruchomienie: vendor/bin/phpunit (albo dowolny PHPUnit 10+).
+-->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         bootstrap="tests/bootstrap.php"
+         colors="true"
+         cacheDirectory=".phpunit.cache"
+         failOnWarning="true"
+         failOnRisky="true"
+         beStrictAboutOutputDuringTests="true">
+    <testsuites>
+        <testsuite name="calmfox-watch-sylius">
+            <directory>tests</directory>
+        </testsuite>
+    </testsuites>
+    <source>
+        <include>
+            <directory suffix=".php">src/Core</directory>
+        </include>
+    </source>
+</phpunit>

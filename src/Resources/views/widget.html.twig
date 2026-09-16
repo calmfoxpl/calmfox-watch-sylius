@@ -1,0 +1,98 @@
+{#
+    Kafelek na pulpicie panelu administracyjnego. Fragment bez layoutu: wpina
+    go zdarzenie szablonu (Sylius 1.x) albo hook (Sylius 2.x), więc renderuje
+    się w cudzym miejscu i nie może niczego zakładać o szacie graficznej.
+    Style są własne, wąskie i podpięte pod jedną klasę.
+
+    Zewnętrzny „cfx-wrap" jest tu z powodu zgłoszenia z żywego sklepu: hook
+    pulpitu w Syliusie 2.x renderuje się POZA kolumną z treścią, więc karta
+    dochodziła do samej krawędzi okna, podczas gdy kafle sprzedaży pod nią
+    były wcięte. Klasa „container-xl" trafia w kontener motywu tam, gdzie on
+    istnieje, a własny margines ratuje wygląd tam, gdzie go nie ma.
+#}
+<div class="cfx-wrap container-xl">
+    <div class="cfx-widget">
+    <style>
+        .cfx-wrap { margin: 1rem auto 1.5rem; padding: 0 1.25rem; box-sizing: border-box; max-width: 100%; }
+        .cfx-widget { border: 1px solid #e5e7eb; border-radius: 10px; padding: 1rem 1.25rem; background: #fff; }
+        .cfx-widget .cfx-w-head { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; justify-content: space-between; }
+        .cfx-widget h2 { font-size: 1.05rem; margin: 0; }
+        .cfx-widget .cfx-w-badge { display: inline-block; padding: .1rem .55rem; border-radius: 999px; font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .03em; }
+        .cfx-widget .cfx-w-ok { background: #dcfce7; color: #14532d; }
+        .cfx-widget .cfx-w-warn { background: #fef3c7; color: #78350f; }
+        .cfx-widget .cfx-w-fail { background: #fee2e2; color: #7f1d1d; }
+        .cfx-widget .cfx-w-note { color: #6b7280; font-size: .85rem; margin: .5rem 0 0; }
+        .cfx-widget ul { margin: .75rem 0 0; padding: 0; list-style: none; }
+        .cfx-widget li { padding: .4rem 0; border-top: 1px solid #f1f5f9; }
+        .cfx-widget li:first-child { border-top: 0; }
+        .cfx-widget .cfx-w-detail { color: #6b7280; font-size: .85rem; display: block; }
+        .cfx-widget .cfx-w-actions { margin-top: .75rem; display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
+        .cfx-widget .cfx-w-params { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .5rem; }
+        .cfx-widget .cfx-w-param { display: inline-flex; align-items: center; gap: .35rem; padding: .2rem .55rem; border: 1px solid #e5e7eb; border-radius: 999px; font-size: .75rem; color: #374151; background: #f8fafc; }
+        .cfx-widget .cfx-w-dot { width: .5rem; height: .5rem; border-radius: 999px; display: inline-block; }
+        .cfx-widget .cfx-w-dot-ok { background: #16a34a; }
+        .cfx-widget .cfx-w-dot-warn { background: #d97706; }
+        .cfx-widget .cfx-w-dot-fail { background: #dc2626; }
+        .cfx-widget .cfx-w-plan { margin-top: .75rem; padding: .625rem .75rem; border-left: 3px solid #cbd5e1; background: #f8fafc; border-radius: 4px; }
+    </style>
+
+    <div class="cfx-w-head">
+        <h2>{{ 'calmfox_watch.widget.heading'|trans }}</h2>
+        {% if connected %}
+            <span class="cfx-w-badge cfx-w-{{ summary.status }}">{{ ('calmfox_watch.admin.status_' ~ summary.status)|trans }}</span>
+        {% endif %}
+    </div>
+
+    {% if not connected %}
+        <p class="cfx-w-note">{{ 'calmfox_watch.widget.not_connected'|trans }}</p>
+    {% else %}
+        <p class="cfx-w-note">
+            {{ 'calmfox_watch.widget.counts'|trans({'%ok%': summary.counts.ok, '%warn%': summary.counts.warn, '%fail%': summary.counts.fail}) }}
+            {% if last_poll_at %}{{ 'calmfox_watch.widget.last_poll'|trans({'%at%': last_poll_at|date('Y-m-d H:i')}) }}{% endif %}
+        </p>
+
+        {% if summary.problems is empty %}
+            <p class="cfx-w-note">{{ 'calmfox_watch.widget.all_good'|trans }}</p>
+        {% else %}
+            <ul>
+                {% for problem in summary.problems %}
+                    <li>
+                        <span class="cfx-w-badge cfx-w-{{ problem.status }}">{{ ('calmfox_watch.admin.status_' ~ problem.status)|trans }}</span>
+                        <strong>{{ problem.label ?? problem.id }}</strong>
+                        {% if problem.detail %}<span class="cfx-w-detail">{{ problem.detail }}</span>{% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+            {% if summary.total > summary.problems|length %}
+                <p class="cfx-w-note">{{ 'calmfox_watch.widget.more'|trans({'%count%': summary.total - summary.problems|length}) }}</p>
+            {% endif %}
+        {% endif %}
+
+        {# Parametry monitoringu: co w tym sklepie w ogóle pilnujemy. Bez tej listy
+           „nic nie wymaga uwagi" nie mówi, CZEGO nic nie wymaga. #}
+        {% if checks is not empty %}
+            <p class="cfx-w-note">{{ 'calmfox_watch.widget.params'|trans }}</p>
+            <div class="cfx-w-params">
+                {% for check in checks %}
+                    <span class="cfx-w-param" title="{{ check.detail ?? '' }}">
+                        <span class="cfx-w-dot cfx-w-dot-{{ check.status }}"></span>{{ check.label ?? check.id }}
+                    </span>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% if is_free %}
+            <div class="cfx-w-plan">
+                <span class="cfx-w-detail">{{ 'calmfox_watch.widget.free_note'|trans }}</span>
+            </div>
+        {% endif %}
+    {% endif %}
+
+    <p class="cfx-w-actions">
+        <a class="ui button btn btn-secondary" href="{{ screen_url }}">{{ 'calmfox_watch.widget.open'|trans }}</a>
+        {% if connected and is_free %}
+            <a class="ui primary button btn btn-primary" href="{{ plan_url }}" target="_blank" rel="noopener">{{ 'calmfox_watch.widget.plans'|trans }}</a>
+        {% endif %}
+    </p>
+    </div>
+</div>

@@ -1,0 +1,10 @@
+{#
+    Wpięcie kafelka w pulpit panelu. Szablon jest jednolinijkowy świadomie:
+    zdarzenie (Sylius 1.x) i hook (Sylius 2.x) potrafią wskazać wyłącznie
+    szablon, a dane kafelka mają przyjść z naszej akcji, z naszym uprawnieniem
+    i naszą pamięcią podręczną, zamiast z kontekstu cudzego widoku.
+
+    `ignore_errors` jest tu ważniejsze niż wygląda: pulpit sklepu nie ma prawa
+    przestać się otwierać dlatego, że nasz kafelek czegoś nie policzył.
+#}
+{{ render(path('calmfox_watch_admin_widget'), {'ignore_errors': true}) }}

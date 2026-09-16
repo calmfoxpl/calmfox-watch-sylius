@@ -1,0 +1,247 @@
+{#
+    Ekran Calmfox Watch w panelu administracyjnym. Layout przychodzi zmienną,
+    bo nazwa szablonu bazowego różni się między Syliusem 1.x a 2.x (parametr
+    calmfox_watch.admin_layout). Style są własne i wąskie: pakiet nie może
+    zakładać, że w panelu jest akurat Semantic UI albo Bootstrap, więc klasy
+    obu bibliotek podajemy obok siebie, a wygląd trzyma własny arkusz.
+#}
+{% extends calmfox_layout %}
+
+{% macro checks(title, payload, csrf_token, quota) %}
+    <div class="cfx-card">
+        <h2>{{ title }} <span class="cfx-badge cfx-{{ payload.status }}">{{ ('calmfox_watch.admin.status_' ~ payload.status)|trans }}</span></h2>
+        {% if payload.checks is empty %}
+            <p>{{ 'calmfox_watch.admin.checks_empty'|trans }}</p>
+        {% else %}
+            <table>
+                {% for check in payload.checks %}
+                    <tr>
+                        <td style="width:6rem;"><span class="cfx-badge cfx-{{ check.status }}">{{ ('calmfox_watch.admin.status_' ~ check.status)|trans }}</span></td>
+                        <td>
+                            <strong>{{ check.label ?? check.id }}</strong>
+                            {% if check.detail %}<br><span class="cfx-detail">{{ check.detail }}</span>{% endif %}
+                            {% if check.fix %}
+                                {# Konkret naprawczy: co ustawić i przykład do skopiowania. Polecenie
+                                   w osobnym bloku, bo zwykle idzie stąd prosto do terminala albo do
+                                   wiadomości do hostingodawcy. #}
+                                <div class="cfx-fix">
+                                    <span class="cfx-fix-label">{{ 'calmfox_watch.admin.fix_label'|trans }}</span>
+                                    <span class="cfx-detail">{{ check.fix }}</span>
+                                    {% if check.command %}
+                                        <code class="cfx-fix-command">{{ check.command }}</code>
+                                        <span class="cfx-detail">{{ 'calmfox_watch.admin.fix_command_note'|trans }}</span>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        </td>
+                        <td class="cfx-ms">{{ check.ms is not null ? check.ms ~ ' ms' : '' }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% endif %}
+
+        {% if quota is not null %}
+            <form method="post" action="{{ path('calmfox_watch_admin_quota') }}" style="margin-top:1rem;">
+                <input type="hidden" name="_token" value="{{ csrf_token }}">
+                <label for="cfx-quota">{{ 'calmfox_watch.admin.quota_label'|trans }}</label>
+                <input type="text" inputmode="decimal" id="cfx-quota" name="quota" style="max-width:8rem;" value="{{ quota > 0 ? quota : '' }}" placeholder="20">
+                <div class="cfx-actions">
+                    <button type="submit" class="ui button btn btn-secondary">{{ 'calmfox_watch.admin.quota_submit'|trans }}</button>
+                </div>
+                <p class="cfx-detail">{{ 'calmfox_watch.admin.quota_hint'|trans }}</p>
+            </form>
+        {% endif %}
+    </div>
+{% endmacro %}
+
+{% block content %}
+{% import _self as cfx %}
+<div class="cfx-watch">
+    <style>
+        .cfx-watch { max-width: 1080px; }
+        .cfx-watch h1 { font-size: 1.6rem; margin: 0 0 .25rem; }
+        .cfx-watch h2 { font-size: 1.1rem; margin: 0 0 .75rem; }
+        .cfx-watch .cfx-version { color: #6b7280; font-size: .85rem; }
+        .cfx-watch .cfx-card { border: 1px solid #e5e7eb; border-radius: 10px; padding: 1rem 1.25rem; margin: 1rem 0; background: #fff; }
+        .cfx-watch .cfx-grid { display: flex; flex-wrap: wrap; gap: 1rem; }
+        .cfx-watch .cfx-grid > .cfx-card { flex: 1 1 320px; margin: 0; }
+        .cfx-watch .cfx-badge { display: inline-block; padding: .1rem .55rem; border-radius: 999px; font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .03em; }
+        .cfx-watch .cfx-ok { background: #dcfce7; color: #14532d; }
+        .cfx-watch .cfx-warn { background: #fef3c7; color: #78350f; }
+        .cfx-watch .cfx-fail { background: #fee2e2; color: #7f1d1d; }
+        .cfx-watch table { width: 100%; border-collapse: collapse; }
+        .cfx-watch td, .cfx-watch th { padding: .5rem .4rem; border-bottom: 1px solid #f1f5f9; vertical-align: top; text-align: left; }
+        .cfx-watch .cfx-detail { color: #6b7280; font-size: .85rem; }
+        .cfx-watch .cfx-ms { text-align: right; white-space: nowrap; color: #6b7280; font-size: .85rem; }
+        .cfx-watch .cfx-fix { margin-top: .5rem; padding: .5rem .625rem; border-left: 3px solid #cbd5e1; background: #f8fafc; border-radius: 4px; }
+        .cfx-watch .cfx-fix-label { display: block; font-size: .7rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: #6b7280; margin-bottom: .2rem; }
+        .cfx-watch .cfx-fix-command { display: block; margin-top: .4rem; padding: .4rem .5rem; background: #0f172a; color: #e2e8f0; border: 0; white-space: pre-wrap; user-select: all; }
+        .cfx-watch code { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: .1rem .35rem; word-break: break-all; font-size: .8rem; }
+        .cfx-watch .cfx-note { padding: .75rem 1rem; border-radius: 8px; margin: .75rem 0; }
+        .cfx-watch .cfx-note-success { background: #dcfce7; color: #14532d; }
+        .cfx-watch .cfx-note-error { background: #fee2e2; color: #7f1d1d; }
+        .cfx-watch .cfx-note-warning { background: #fef3c7; color: #78350f; }
+        .cfx-watch label { display: block; font-weight: 600; margin-bottom: .25rem; }
+        .cfx-watch input[type="text"], .cfx-watch input[type="email"] { width: 100%; max-width: 380px; padding: .45rem .6rem; border: 1px solid #cbd5e1; border-radius: 6px; }
+        .cfx-watch .cfx-actions { margin-top: .75rem; display: flex; gap: .5rem; flex-wrap: wrap; align-items: center; }
+        .cfx-watch .cfx-actions form { margin: 0; }
+        .cfx-watch .cfx-plan-list { margin: .5rem 0 .25rem 1.1rem; list-style: disc; }
+        .cfx-watch .cfx-plan-list li { margin-bottom: .25rem; color: #374151; font-size: .9rem; }
+        .cfx-watch .cfx-fallback { margin-top: 1rem; border-top: 1px solid #f1f5f9; padding-top: .75rem; }
+        .cfx-watch .cfx-fallback summary { cursor: pointer; font-weight: 600; }
+    </style>
+
+    <h1>Calmfox Watch</h1>
+    <p class="cfx-version">{{ 'calmfox_watch.admin.version'|trans({'%version%': version}) }}</p>
+
+    {% for message in app.flashes('calmfox_success') %}
+        <div class="cfx-note cfx-note-success">{{ message }}</div>
+    {% endfor %}
+    {% for message in app.flashes('calmfox_error') %}
+        <div class="cfx-note cfx-note-error">{{ message }}</div>
+    {% endfor %}
+
+    {% if not loopback.ok %}
+        <div class="cfx-note cfx-note-warning">{{ 'calmfox_watch.admin.loopback_warning'|trans({'%error%': loopback.message}) }}</div>
+    {% endif %}
+
+    {% if not connected %}
+        <p>{{ 'calmfox_watch.admin.lead'|trans }}</p>
+
+        <div class="cfx-grid">
+            <div class="cfx-card">
+                <h2>{{ 'calmfox_watch.admin.free_heading'|trans }}</h2>
+                <p class="cfx-detail">{{ 'calmfox_watch.admin.free_intro'|trans }}</p>
+                <form method="post" action="{{ path('calmfox_watch_admin_register') }}">
+                    <input type="hidden" name="_token" value="{{ csrf_token }}">
+                    <label for="cfx-email">{{ 'calmfox_watch.admin.email_label'|trans }}</label>
+                    <input type="email" id="cfx-email" name="email" required>
+                    <p style="margin-top:.75rem;">
+                        <label style="font-weight:400;">
+                            <input type="checkbox" name="consent" value="1" required>
+                            {{ 'calmfox_watch.admin.consent_label'|trans }}
+                        </label>
+                    </p>
+                    <div class="cfx-actions">
+                        <button type="submit" class="ui primary button btn btn-primary">{{ 'calmfox_watch.admin.free_submit'|trans }}</button>
+                    </div>
+                </form>
+            </div>
+
+            {#
+                Druga droga startu: jedno kliknięcie zamiast wycieczki po klucz.
+                Wychodzimy do panelu, tam logowanie albo rejestracja i wybór
+                organizacji, a wracamy tu z kluczem i parujemy się sami. Ręczne
+                wklejenie klucza zostaje jako zapasowe wejście, bo sklep z panelem
+                na osobnej domenie tej drogi nie dostanie.
+            #}
+            <div class="cfx-card">
+                <h2>{{ 'calmfox_watch.admin.connect_heading'|trans }}</h2>
+                {% if connect_available %}
+                    <p class="cfx-detail">{{ 'calmfox_watch.admin.connect_intro'|trans({'%panel%': panel_host}) }}</p>
+                    <form method="post" action="{{ path('calmfox_watch_admin_connect') }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token }}">
+                        <div class="cfx-actions">
+                            <button type="submit" class="ui primary button btn btn-primary">{{ 'calmfox_watch.admin.connect_submit'|trans({'%panel%': panel_host}) }}</button>
+                        </div>
+                    </form>
+                {% else %}
+                    <p class="cfx-note cfx-note-warning">{{ 'calmfox_watch.admin.connect_unavailable'|trans({'%domain%': domain}) }}</p>
+                {% endif %}
+
+                <details class="cfx-fallback"{% if not connect_available %} open{% endif %}>
+                    <summary>{{ 'calmfox_watch.admin.pair_heading'|trans }}</summary>
+                    <p class="cfx-detail">{{ 'calmfox_watch.admin.pair_intro'|trans }}</p>
+                    <form method="post" action="{{ path('calmfox_watch_admin_pair') }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token }}">
+                        <label for="cfx-token">{{ 'calmfox_watch.admin.token_label'|trans }}</label>
+                        <input type="text" id="cfx-token" name="token" placeholder="fxp_live_…" required>
+                        <div class="cfx-actions">
+                            <button type="submit" class="ui button btn btn-secondary">{{ 'calmfox_watch.admin.pair_submit'|trans }}</button>
+                        </div>
+                    </form>
+                </details>
+            </div>
+        </div>
+    {% else %}
+        <div class="cfx-card">
+            <h2>{{ 'calmfox_watch.admin.connected_heading'|trans }}</h2>
+            <p>
+                {{ 'calmfox_watch.admin.connected_summary'|trans({'%domain%': domain, '%plan%': state.plan|default('') ?: 'Free'}) }}
+                {% if last_poll_at %}
+                    {{ 'calmfox_watch.admin.last_poll'|trans({'%at%': last_poll_at|date('Y-m-d H:i')}) }}
+                {% else %}
+                    {{ 'calmfox_watch.admin.never_polled'|trans }}
+                {% endif %}
+            </p>
+            <div class="cfx-actions">
+                <a class="ui primary button btn btn-primary" href="{{ panel_url ~ '/app/dashboard' ~ (state.siteId|default('') ? '?site=' ~ state.siteId : '') }}" target="_blank" rel="noopener">{{ 'calmfox_watch.admin.open_panel'|trans }}</a>
+                <form method="post" action="{{ path('calmfox_watch_admin_rotate') }}" onsubmit="return confirm('{{ 'calmfox_watch.admin.rotate_confirm'|trans|e('js') }}');">
+                    <input type="hidden" name="_token" value="{{ csrf_token }}">
+                    <button type="submit" class="ui button btn btn-secondary">{{ 'calmfox_watch.admin.rotate'|trans }}</button>
+                </form>
+                <form method="post" action="{{ path('calmfox_watch_admin_disconnect') }}" onsubmit="return confirm('{{ 'calmfox_watch.admin.disconnect_confirm'|trans|e('js') }}');">
+                    <input type="hidden" name="_token" value="{{ csrf_token }}">
+                    <button type="submit" class="ui negative button btn btn-danger">{{ 'calmfox_watch.admin.disconnect'|trans }}</button>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+
+    {#
+        Pakiet strony. Zakup dzieje się w panelu (subskrypcja per strona), pakiet tylko
+        prowadzi do właściwego miejsca w kontekście TEGO sklepu. Pakiet pokazujemy
+        z zastrzeżeniem, bo znamy go z chwili połączenia; źródłem prawdy jest panel.
+    #}
+    {% if connected %}
+        <div class="cfx-card">
+            {% if is_free %}
+                <h2>{{ 'calmfox_watch.admin.plan_free_heading'|trans }}</h2>
+                <p class="cfx-detail">{{ 'calmfox_watch.admin.plan_free_intro'|trans }}</p>
+                <ul class="cfx-plan-list">
+                    {% for i in 1..5 %}
+                        <li>{{ ('calmfox_watch.admin.plan_item_' ~ i)|trans }}</li>
+                    {% endfor %}
+                </ul>
+                <div class="cfx-actions">
+                    <a class="ui primary button btn btn-primary" href="{{ plan_url }}" target="_blank" rel="noopener">{{ 'calmfox_watch.admin.plan_free_cta'|trans }}</a>
+                </div>
+                <p class="cfx-detail" style="margin-top:.75rem;">{{ 'calmfox_watch.admin.plan_free_note'|trans }}</p>
+            {% else %}
+                <h2>{{ 'calmfox_watch.admin.plan_paid_heading'|trans }}</h2>
+                <p>{{ 'calmfox_watch.admin.plan_paid_text'|trans({'%plan%': plan|capitalize}) }}</p>
+                <div class="cfx-actions">
+                    <a class="ui button btn btn-secondary" href="{{ plan_url }}" target="_blank" rel="noopener">{{ 'calmfox_watch.admin.plan_paid_cta'|trans }}</a>
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    <div class="cfx-card">
+        <h2>{{ 'calmfox_watch.admin.health_url_label'|trans }}</h2>
+        <p><code>{{ health_url }}</code></p>
+        <p class="cfx-detail">{{ 'calmfox_watch.admin.health_url_hint'|trans }}</p>
+    </div>
+
+    {{ cfx.checks('calmfox_watch.admin.health_heading'|trans, health, csrf_token, disk_quota_gb) }}
+    {{ cfx.checks('calmfox_watch.admin.security_heading'|trans, security, csrf_token, null) }}
+
+    <div class="cfx-card">
+        <h2>{{ 'calmfox_watch.admin.history_heading'|trans }}</h2>
+        <p class="cfx-detail">{{ 'calmfox_watch.admin.history_note'|trans }}</p>
+        {% if history is empty %}
+            <p>{{ 'calmfox_watch.admin.history_empty'|trans }}</p>
+        {% else %}
+            <table>
+                {% for entry in history %}
+                    <tr>
+                        <td class="cfx-detail">{{ entry.at|date('Y-m-d H:i') }}</td>
+                        <td><strong>{{ entry.name }}</strong> <span class="cfx-detail">({{ ('calmfox_watch.admin.kind_' ~ entry.kind)|trans }})</span></td>
+                        <td>{{ (entry.from ? entry.from ~ ' → ' : '') ~ (entry.to ?? '') }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

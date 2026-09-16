@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+    <file source-language="pl" target-language="en" datatype="plaintext" original="calmfox-watch">
+        <body>
+            <trans-unit id="cfx.menu"><source>calmfox_watch.menu.admin</source><target>Calmfox Watch</target></trans-unit>
+            <trans-unit id="cfx.version"><source>calmfox_watch.admin.version</source><target>version %version%</target></trans-unit>
+            <trans-unit id="cfx.lead"><source>calmfox_watch.admin.lead</source><target>Store internals monitoring: service availability (database, mail, disk, queues, cache), checkout prerequisites, basic security hygiene and package version history. Results are available in the Calmfox Watch panel.</target></trans-unit>
+            <trans-unit id="cfx.loopback"><source>calmfox_watch.admin.loopback_warning</source><target>A request made from this server does not reach the health endpoint (%error%). If pairing fails, review the access rules in security.yaml and the firewall.</target></trans-unit>
+            <trans-unit id="cfx.free.h"><source>calmfox_watch.admin.free_heading</source><target>No account yet, start the Free plan</target></trans-unit>
+            <trans-unit id="cfx.free.i"><source>calmfox_watch.admin.free_intro</source><target>The account is created right away: availability of the store, the SSL certificate and the state of its services. No password, you sign in with a link sent by e-mail.</target></trans-unit>
+            <trans-unit id="cfx.free.e"><source>calmfox_watch.admin.email_label</source><target>Owner e-mail address</target></trans-unit>
+            <trans-unit id="cfx.free.c"><source>calmfox_watch.admin.consent_label</source><target>I agree to send my e-mail address and the store domain to Calmfox in order to create a monitoring account.</target></trans-unit>
+            <trans-unit id="cfx.free.s"><source>calmfox_watch.admin.free_submit</source><target>Start the Free plan</target></trans-unit>
+            <trans-unit id="cfx.conn.h2"><source>calmfox_watch.admin.connect_heading</source><target>I already have an account, connect through the panel</target></trans-unit>
+            <trans-unit id="cfx.conn.i"><source>calmfox_watch.admin.connect_intro</source><target>You will go to %panel%, sign in or create an account, pick an organisation, and we will come back here with the key and connect the store. The store does not have to exist in the panel beforehand.</target></trans-unit>
+            <trans-unit id="cfx.conn.s2"><source>calmfox_watch.admin.connect_submit</source><target>Connect through %panel%</target></trans-unit>
+            <trans-unit id="cfx.conn.u"><source>calmfox_watch.admin.connect_unavailable</source><target>This screen runs under a different address than the store domain reported to the monitoring (%domain%), so the panel would reject the return with the key. Pair with the installation key instead.</target></trans-unit>
+            <trans-unit id="cfx.pair.h"><source>calmfox_watch.admin.pair_heading</source><target>Prefer to paste the key by hand?</target></trans-unit>
+            <trans-unit id="cfx.pair.i"><source>calmfox_watch.admin.pair_intro</source><target>The installation key is on the Integrations screen in the Calmfox Watch panel, next to this store.</target></trans-unit>
+            <trans-unit id="cfx.pair.t"><source>calmfox_watch.admin.token_label</source><target>Installation key</target></trans-unit>
+            <trans-unit id="cfx.pair.s"><source>calmfox_watch.admin.pair_submit</source><target>Pair with the key</target></trans-unit>
+            <trans-unit id="cfx.conn.h"><source>calmfox_watch.admin.connected_heading</source><target>Connected to Calmfox Watch</target></trans-unit>
+            <trans-unit id="cfx.conn.s"><source>calmfox_watch.admin.connected_summary</source><target>Store %domain%, plan %plan%.</target></trans-unit>
+            <trans-unit id="cfx.conn.p"><source>calmfox_watch.admin.last_poll</source><target>Last monitoring request: %at%.</target></trans-unit>
+            <trans-unit id="cfx.conn.n"><source>calmfox_watch.admin.never_polled</source><target>Monitoring has not polled the health endpoint yet, the first check happens within a few minutes.</target></trans-unit>
+            <trans-unit id="cfx.conn.o"><source>calmfox_watch.admin.open_panel</source><target>Open this store in the panel</target></trans-unit>
+            <trans-unit id="cfx.rot"><source>calmfox_watch.admin.rotate</source><target>Replace the key</target></trans-unit>
+            <trans-unit id="cfx.rot.c"><source>calmfox_watch.admin.rotate_confirm</source><target>Replace the key guarding the health endpoint? Monitoring will be switched to the new address.</target></trans-unit>
+            <trans-unit id="cfx.dis"><source>calmfox_watch.admin.disconnect</source><target>Disconnect</target></trans-unit>
+            <trans-unit id="cfx.dis.c"><source>calmfox_watch.admin.disconnect_confirm</source><target>End monitoring of the store internals? Checks in the panel will be paused.</target></trans-unit>
+            <trans-unit id="cfx.url"><source>calmfox_watch.admin.health_url_label</source><target>Health endpoint</target></trans-unit>
+            <trans-unit id="cfx.url.h"><source>calmfox_watch.admin.health_url_hint</source><target>Monitoring polls this address. The key in it is the only protection, so do not publish it and do not paste it into support tickets.</target></trans-unit>
+            <trans-unit id="cfx.h.health"><source>calmfox_watch.admin.health_heading</source><target>Service health</target></trans-unit>
+            <trans-unit id="cfx.h.sec"><source>calmfox_watch.admin.security_heading</source><target>Security</target></trans-unit>
+            <trans-unit id="cfx.h.empty"><source>calmfox_watch.admin.checks_empty</source><target>No checks to show.</target></trans-unit>
+            <trans-unit id="cfx.fix.l"><source>calmfox_watch.admin.fix_label</source><target>How to fix</target></trans-unit>
+            <trans-unit id="cfx.fix.n"><source>calmfox_watch.admin.fix_command_note</source><target>An example to run on the server, in the store directory. Review it before you use it.</target></trans-unit>
+            <trans-unit id="cfx.q.l"><source>calmfox_watch.admin.quota_label</source><target>Disk quota of your hosting account (GB)</target></trans-unit>
+            <trans-unit id="cfx.q.h"><source>calmfox_watch.admin.quota_hint</source><target>You will find it in the hosting panel or in your contract. Leave it empty if you do not know it: we then show only the size of the store, without guessing.</target></trans-unit>
+            <trans-unit id="cfx.q.s"><source>calmfox_watch.admin.quota_submit</source><target>Save the quota</target></trans-unit>
+            <trans-unit id="cfx.hist.h"><source>calmfox_watch.admin.history_heading</source><target>Version change history</target></trans-unit>
+            <trans-unit id="cfx.hist.n"><source>calmfox_watch.admin.history_note</source><target>Collected since the package was installed, by comparing snapshots of the installed packages. The timestamp is the moment of detection, not the moment of deployment.</target></trans-unit>
+            <trans-unit id="cfx.hist.e"><source>calmfox_watch.admin.history_empty</source><target>No entries yet. The first one appears after the next deployment.</target></trans-unit>
+            <trans-unit id="cfx.st.ok"><source>calmfox_watch.admin.status_ok</source><target>OK</target></trans-unit>
+            <trans-unit id="cfx.st.warn"><source>calmfox_watch.admin.status_warn</source><target>warning</target></trans-unit>
+            <trans-unit id="cfx.st.fail"><source>calmfox_watch.admin.status_fail</source><target>failure</target></trans-unit>
+            <trans-unit id="cfx.k.core"><source>calmfox_watch.admin.kind_core</source><target>platform</target></trans-unit>
+            <trans-unit id="cfx.k.plugin"><source>calmfox_watch.admin.kind_plugin</source><target>package</target></trans-unit>
+            <trans-unit id="cfx.w.h"><source>calmfox_watch.widget.heading</source><target>Calmfox Watch: store health</target></trans-unit>
+            <trans-unit id="cfx.w.nc"><source>calmfox_watch.widget.not_connected</source><target>Store monitoring is not connected to the panel yet. The checks run locally, but nobody outside this screen knows about them.</target></trans-unit>
+            <trans-unit id="cfx.w.c"><source>calmfox_watch.widget.counts</source><target>Checks: %ok% fine, %warn% with a warning, %fail% failing.</target></trans-unit>
+            <trans-unit id="cfx.w.p"><source>calmfox_watch.widget.last_poll</source><target>Last monitoring poll: %at%.</target></trans-unit>
+            <trans-unit id="cfx.w.a"><source>calmfox_watch.widget.all_good</source><target>Nothing needs attention.</target></trans-unit>
+            <trans-unit id="cfx.w.m"><source>calmfox_watch.widget.more</source><target>Further items to review: %count%.</target></trans-unit>
+            <trans-unit id="cfx.w.o"><source>calmfox_watch.widget.open</source><target>Open Calmfox Watch</target></trans-unit>
+            <trans-unit id="cfx.menu.o"><source>calmfox_watch.menu.overview</source><target>Store health</target></trans-unit>
+            <trans-unit id="cfx.plan.fh"><source>calmfox_watch.admin.plan_free_heading</source><target>The Free plan, and what a higher tier adds</target></trans-unit>
+            <trans-unit id="cfx.plan.fi"><source>calmfox_watch.admin.plan_free_intro</source><target>On Free we watch store availability, the certificate and the state of services. Higher plans add what Free does not cover:</target></trans-unit>
+            <trans-unit id="cfx.plan.i1"><source>calmfox_watch.admin.plan_item_1</source><target>probes every 30 to 60 seconds instead of every 5 minutes, so an outage shows up at once, not a quarter of an hour later</target></trans-unit>
+            <trans-unit id="cfx.plan.i2"><source>calmfox_watch.admin.plan_item_2</source><target>page review: truncated content, 404s and broken links, before a customer notices them</target></trans-unit>
+            <trans-unit id="cfx.plan.i3"><source>calmfox_watch.admin.plan_item_3</source><target>monitoring of chosen pages and of the checkout path, not only the home page</target></trans-unit>
+            <trans-unit id="cfx.plan.i4"><source>calmfox_watch.admin.plan_item_4</source><target>alerts by SMS, messenger and mobile app, with no monthly cap</target></trans-unit>
+            <trans-unit id="cfx.plan.i5"><source>calmfox_watch.admin.plan_item_5</source><target>periodic reports and a longer event history</target></trans-unit>
+            <trans-unit id="cfx.plan.fc"><source>calmfox_watch.admin.plan_free_cta</source><target>See the plans for this store</target></trans-unit>
+            <trans-unit id="cfx.plan.fn"><source>calmfox_watch.admin.plan_free_note</source><target>You buy the plan in the panel, by card, separately for each site. The store can move up while a brochure site stays on Free.</target></trans-unit>
+            <trans-unit id="cfx.plan.ph"><source>calmfox_watch.admin.plan_paid_heading</source><target>Plan and payments</target></trans-unit>
+            <trans-unit id="cfx.plan.pt"><source>calmfox_watch.admin.plan_paid_text</source><target>This store is on the %plan% plan (as known when it was connected, the current plan and payments are in the panel).</target></trans-unit>
+            <trans-unit id="cfx.plan.pc"><source>calmfox_watch.admin.plan_paid_cta</source><target>Manage plan and payments</target></trans-unit>
+            <trans-unit id="cfx.w.par"><source>calmfox_watch.widget.params</source><target>Monitoring parameters for this store:</target></trans-unit>
+            <trans-unit id="cfx.w.fn"><source>calmfox_watch.widget.free_note</source><target>The store is on the Free plan: home page checks and certificate monitoring. A higher tier adds more frequent probes, page review and alerts without a cap.</target></trans-unit>
+            <trans-unit id="cfx.w.pl"><source>calmfox_watch.widget.plans</source><target>See the plans</target></trans-unit>
+        </body>
+    </file>
+</xliff>

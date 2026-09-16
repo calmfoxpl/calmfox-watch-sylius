@@ -1,0 +1,106 @@
+{
+    "schema": 1,
+    "plugin": "1.0.0",
+    "status": "warn",
+    "checks": [
+        {
+            "id": "db",
+            "status": "ok",
+            "label": "Baza danych",
+            "detail": null,
+            "fix": null,
+            "command": null,
+            "ms": 3
+        },
+        {
+            "id": "disk",
+            "status": "warn",
+            "label": "Miejsce na dysku",
+            "detail": "Sklep zajmuje 17,4 GB. To 86% z podanego limitu konta 20,0 GB. Poza tym miejsce zajmują poczta i pozostałe strony na koncie.",
+            "fix": null,
+            "command": null,
+            "ms": null
+        },
+        {
+            "id": "smtp",
+            "status": "ok",
+            "label": "Wysyłka e-mail (SMTP)",
+            "detail": "Serwer smtp.example.com:587 przyjmuje połączenia. To test połączenia, nie doręczenia wiadomości.",
+            "fix": null,
+            "command": null,
+            "ms": 128
+        },
+        {
+            "id": "messenger",
+            "status": "ok",
+            "label": "Kolejki zadań",
+            "detail": "W kolejce czekają 4 wiadomości, najstarsza od 41 s.",
+            "fix": null,
+            "command": null,
+            "ms": 7
+        },
+        {
+            "id": "app_cache",
+            "status": "ok",
+            "label": "Pamięć podręczna aplikacji (Redis)",
+            "detail": null,
+            "fix": null,
+            "command": null,
+            "ms": 2
+        },
+        {
+            "id": "checkout",
+            "status": "ok",
+            "label": "Ścieżka zakupowa",
+            "detail": "Każdy z 2 włączonych kanałów ma czynną metodę płatności i dostawy.",
+            "fix": null,
+            "command": null,
+            "ms": 11
+        },
+        {
+            "id": "scheduled_tasks",
+            "status": "ok",
+            "label": "Zadania cykliczne",
+            "detail": "Ostatnie wywołanie 4 min temu.",
+            "fix": null,
+            "command": null,
+            "ms": null
+        },
+        {
+            "id": "elasticsearch",
+            "status": "ok",
+            "label": "Elasticsearch",
+            "detail": "Stan klastra: green.",
+            "fix": null,
+            "command": null,
+            "ms": 22
+        }
+    ],
+    "site": {
+        "wp": "1.13.2",
+        "php": "8.3.14",
+        "plugin": "1.0.0",
+        "updates": {
+            "core": 0,
+            "plugins": 6,
+            "themes": 0
+        }
+    },
+    "signals": {
+        "adminCount": 3,
+        "adminsFingerprint": "809c29304c69ba3517e3904c0ac5b161",
+        "newestAdminAt": "2026-07-30T09:12:00+00:00",
+        "pluginCount": 8,
+        "pluginsFingerprint": "d7daf4d07a8d7e2ae81fe62996a5ed89",
+        "activePlugins": [
+            "CalmfoxWatchBundle",
+            "DoctrineBundle",
+            "FrameworkBundle",
+            "SecurityBundle",
+            "SyliusAdminBundle",
+            "SyliusCoreBundle",
+            "SyliusShopBundle",
+            "TwigBundle"
+        ]
+    }
+}
