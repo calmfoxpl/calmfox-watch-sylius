@@ -406,6 +406,13 @@ Dzięki temu kontrakt z panelem da się przetestować bez kontenera i bez bazy.
 vendor/bin/phpunit
 ```
 
+Test zgodności podpisu z panelem sięga po kod huba, który mieszka w osobnym
+repozytorium — bez niego sam się pomija. Żeby go uruchomić, wskaż katalog huba:
+
+```bash
+CALMFOX_HUB_DIR=~/Works/work_tmp/foxpatrzy vendor/bin/phpunit
+```
+
 Testy pilnują między innymi: agregacji `ok`/`warn`/`fail`, odrzucenia złego
 klucza, ważności poprzedniego sekretu w oknie rotacji i jej wygaśnięcia,
 zgodności podpisu z weryfikacją po stronie panelu, pominięcia pola `updates`

@@ -77,9 +77,13 @@ final class ResponseSignerTest extends TestCase
 
     private static function hubClient(): object
     {
-        $file = __DIR__.'/../../../api/src/Plugin/WpHealthClient.php';
+        // Hub żyje w osobnym repozytorium (foxpatrzy), więc jego katalog wskazuje
+        // CALMFOX_HUB_DIR. Bez niego test się pomija: podpis sprawdzamy wtedy
+        // wyłącznie własnym kodem, a to za mało, żeby mówić o zgodności z hubem.
+        $hub = getenv('CALMFOX_HUB_DIR') ?: __DIR__.'/../../foxpatrzy';
+        $file = $hub.'/api/src/Plugin/WpHealthClient.php';
         if (!is_file($file)) {
-            self::markTestSkipped('Kod huba niedostępny (pakiet uruchamiany poza repozytorium Calmfox Watch).');
+            self::markTestSkipped('Kod huba niedostępny — wskaż repozytorium huba przez CALMFOX_HUB_DIR.');
         }
         require_once $file;
 
