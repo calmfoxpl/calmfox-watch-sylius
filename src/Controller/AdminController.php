@@ -8,7 +8,9 @@ use Calmfox\WatchBundle\CalmfoxWatchBundle;
 use Calmfox\WatchBundle\Core\SecretManager;
 use Calmfox\WatchBundle\Core\StateStore;
 use Calmfox\WatchBundle\Core\StatusSummary;
+use Calmfox\WatchBundle\Core\ScoreRing;
 use Calmfox\WatchBundle\History\UpdateHistory;
+use Calmfox\WatchBundle\Score\ScoreProvider;
 use Calmfox\WatchBundle\Hub\HubClient;
 use Calmfox\WatchBundle\Payload\PayloadProvider;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -44,6 +46,7 @@ final class AdminController
         private readonly SecretManager $secrets,
         private readonly StateStore $state,
         private readonly UpdateHistory $history,
+        private readonly ScoreProvider $score,
         private readonly string $layout,
     ) {
     }
@@ -79,6 +82,9 @@ final class AdminController
             'health' => $health,
             'security' => $security,
             'history' => \array_slice($this->history->all(), 0, 10),
+            // Ocena z panelu. `null` znaczy „nie wiemy" (brak połączenia, próg Free,
+            // hub jeszcze nie policzył) i szablon chowa wtedy pierścień w całości.
+            'score' => $this->score->get(),
             'loopback' => $this->hub->loopbackCheck(),
             'last_poll_at' => $this->secrets->lastPollAt(),
             'disk_quota_gb' => (float) $this->state->get('diskQuotaGb', 0),
@@ -133,11 +139,17 @@ final class AdminController
             // pokazuje je nawet wtedy, gdy wszystko działa: bez tej listy „nic nie
             // wymaga uwagi" nie mówi, CZEGO właściwie nic nie wymaga.
             'checks' => \is_array($health['checks'] ?? null) ? $health['checks'] : [],
+            'score' => $connected ? $this->score->get() : null,
             'screen_url' => $this->router->generate('calmfox_watch_admin'),
             'last_poll_at' => $this->secrets->lastPollAt(),
             'plan' => $this->plan(),
             'is_free' => self::isFree($this->plan()),
             'plan_url' => $this->hub->panelLink('/app/plan'),
+            // Drugie CTA kafelka: ten sklep w panelu, nie sam cennik.
+            'panel_site_url' => $this->hub->panelLink('/app/dashboard'),
+            // Pierścień zastępczy na miejsce oceny, której na Free nie ma. Liczymy go tu,
+            // a nie w szablonie: geometria należy do rdzenia, widok tylko rysuje.
+            'placeholder_ring' => ScoreRing::placeholder(),
         ]));
     }
 
@@ -249,6 +261,7 @@ final class AdminController
 
         $this->secrets->rotate();
         $result = $this->hub->pair();
+        $this->score->forget();
 
         return $this->back($request, $result['ok'] ? 'success' : 'error', $result['ok']
             ? 'Klucz zabezpieczający wymieniony. Monitoring korzysta już z nowego adresu.'
@@ -280,6 +293,7 @@ final class AdminController
         $this->assertCsrf($request);
 
         $result = $this->hub->disconnect();
+        $this->score->forget();
 
         return $this->back($request, 'success', $result['ok']
             ? $result['message']

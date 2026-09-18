@@ -20,12 +20,19 @@ final class CalmfoxWatchExtension extends Extension implements PrependExtensionI
      * właścicielowi sklepu edytować konfigurację po instalacji, a monitoring,
      * o którym trzeba pamiętać, nie jest monitoringiem.
      *
-     * Sylius 1.x i 2.x mają na to dwa różne mechanizmy i deklarujemy oba,
-     * pilnując wyłącznie tego, czy odpowiedni pakiet w ogóle jest w projekcie.
+     * Sylius 1.x i 2.x mają na to dwa różne mechanizmy i deklarujemy oba.
      * Nazwy miejsc są sprawdzone w kodzie Syliusa: zdarzenie szablonu pulpitu
      * w 1.x to `sylius.admin.dashboard.content`, hook w 2.x to
      * `sylius_admin.dashboard.index.content` (tam priorytet 150 wchodzi między
      * nagłówek 200 a statystyki 100, czyli nad wykresy sprzedaży).
+     *
+     * O tym, którą gałąź wybrać, NIE rozstrzyga obecność SyliusUiBundle i nie
+     * wolno tego uprościć z powrotem: w Syliusie 2.x ten bundel nadal jest
+     * wpięty, ale jego konfiguracja ma już tylko `twig_ux`. Zadeklarowanie
+     * `events` wywraca wtedy budowanie kontenera („Unrecognized option
+     * \"events\" under \"sylius_ui\"”), czyli nie psuje kafelka — kładzie
+     * CAŁY sklep, razem ze sklepem dla kupujących, bo żadna strona się nie
+     * zbuduje. Rozstrzyga dopiero brak bundla z hookami: ma go wyłącznie 2.x.
      */
     public function prepend(ContainerBuilder $container): void
     {
@@ -35,7 +42,7 @@ final class CalmfoxWatchExtension extends Extension implements PrependExtensionI
 
         $bundles = (array) $container->getParameter('kernel.bundles');
 
-        if (isset($bundles['SyliusUiBundle'])) {
+        if (isset($bundles['SyliusUiBundle']) && !isset($bundles['SyliusTwigHooksBundle'])) {
             $container->prependExtensionConfig('sylius_ui', ['events' => [
                 'sylius.admin.dashboard.content' => ['blocks' => [
                     'calmfox_watch' => ['template' => self::DASHBOARD_TEMPLATE, 'priority' => 10],

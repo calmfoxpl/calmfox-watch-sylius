@@ -191,6 +191,16 @@ services:
             - '%calmfox_watch.api_url%'
             - '%calmfox_watch.site_url%'
 
+    # Ocena kondycji z huba dla pierścienia na ekranie i kafelku. Osobna usługa,
+    # bo bufor ma własny rytm (godzina na odpowiedź, 5 minut na ciszę huba) i nie
+    # ma prawa opóźniać rysowania ekranu, kiedy hub milczy.
+    calmfox_watch.score:
+        class: Calmfox\WatchBundle\Score\ScoreProvider
+        arguments:
+            - '@calmfox_watch.hub'
+            - '@calmfox_watch.state'
+            - '@calmfox_watch.cache'
+
     # ── Trasy i ekran w panelu ───────────────────────────────────────────
     Calmfox\WatchBundle\Controller\HealthController:
         public: true
@@ -208,6 +218,7 @@ services:
             - '@calmfox_watch.secrets'
             - '@calmfox_watch.state'
             - '@calmfox_watch.history'
+            - '@calmfox_watch.score'
             - '%calmfox_watch.admin_layout%'
 
     calmfox_watch.menu_listener:

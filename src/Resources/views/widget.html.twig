@@ -2,38 +2,82 @@
     Kafelek na pulpicie panelu administracyjnego. Fragment bez layoutu: wpina
     go zdarzenie szablonu (Sylius 1.x) albo hook (Sylius 2.x), więc renderuje
     się w cudzym miejscu i nie może niczego zakładać o szacie graficznej.
-    Style są własne, wąskie i podpięte pod jedną klasę.
 
     Zewnętrzny „cfx-wrap" jest tu z powodu zgłoszenia z żywego sklepu: hook
     pulpitu w Syliusie 2.x renderuje się POZA kolumną z treścią, więc karta
     dochodziła do samej krawędzi okna, podczas gdy kafle sprzedaży pod nią
     były wcięte. Klasa „container-xl" trafia w kontener motywu tam, gdzie on
-    istnieje, a własny margines ratuje wygląd tam, gdzie go nie ma.
+    istnieje, a tam, gdzie go nie ma (Sylius 1.x), hook i tak renderuje się
+    już wewnątrz kolumny treści.
+
+    Szerokości i wcięcia poziomego NIE ustawiamy sami i nie wolno tego zmienić.
+    Własne „max-width" i „padding" na tej samej klasie cofały to, po co
+    „container-xl" tu stoi: motyw daje karcie 1320 px (a powyżej 2200 px okna
+    — 1920 px) i wcięcie liczone z „--tblr-page-padding", nasze reguły
+    zastępowały to szerokością całego okna i sztywnymi 20 px. Selektory ważą
+    tyle samo (jedna klasa), a ten arkusz stoi w treści strony, czyli za
+    arkuszem motywu — więc wygrywał kolejnością i karta znowu szła od krawędzi
+    do krawędzi, tym razem z winy pakietu. Zostaje sam odstęp pionowy.
+
+    Rozmiary tekstu biorą ZMIENNE MOTYWU (Tabler wystawia --tblr-font-size-*
+    i --tblr-body-font-size), a wartości zapasowe trzymają wygląd w Syliusie 1.x,
+    gdzie tych zmiennych nie ma. Kroju nie ustawiamy wcale.
+
+    Kafelek NIE tłumaczy sprawdzeń. Na pulpicie ma zadziałać jedno spojrzenie:
+    pierścień, trzy liczby i nazwy tego, co się psuje. Po „dlaczego" i „jak
+    naprawić" prowadzą dwa przyciski — ekran pakietu i panel Calmfox Watch.
 #}
 <div class="cfx-wrap container-xl">
     <div class="cfx-widget">
     <style>
-        .cfx-wrap { margin: 1rem auto 1.5rem; padding: 0 1.25rem; box-sizing: border-box; max-width: 100%; }
-        .cfx-widget { border: 1px solid #e5e7eb; border-radius: 10px; padding: 1rem 1.25rem; background: #fff; }
-        .cfx-widget .cfx-w-head { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; justify-content: space-between; }
-        .cfx-widget h2 { font-size: 1.05rem; margin: 0; }
-        .cfx-widget .cfx-w-badge { display: inline-block; padding: .1rem .55rem; border-radius: 999px; font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .03em; }
+        .cfx-wrap { margin-top: 1rem; margin-bottom: 1.5rem; }
+        .cfx-widget { border: 1px solid #e5e7eb; border-radius: 6px; padding: 1.25rem 1.5rem; background: #fff; font-size: var(--tblr-body-font-size, .875rem); }
+        .cfx-widget .cfx-w-head { display: flex; flex-wrap: wrap; gap: .5rem; align-items: baseline; justify-content: space-between; margin-bottom: 1rem; }
+        .cfx-widget h2 { font-size: var(--tblr-font-size-h2, 1.25rem); font-weight: 600; margin: 0; }
+        .cfx-widget .cfx-w-badge { display: inline-block; padding: .15rem .6rem; border-radius: 999px; font-size: var(--tblr-font-size-h6, .625rem); font-weight: 700; text-transform: uppercase; letter-spacing: .05em; white-space: nowrap; }
         .cfx-widget .cfx-w-ok { background: #dcfce7; color: #14532d; }
         .cfx-widget .cfx-w-warn { background: #fef3c7; color: #78350f; }
         .cfx-widget .cfx-w-fail { background: #fee2e2; color: #7f1d1d; }
-        .cfx-widget .cfx-w-note { color: #6b7280; font-size: .85rem; margin: .5rem 0 0; }
-        .cfx-widget ul { margin: .75rem 0 0; padding: 0; list-style: none; }
-        .cfx-widget li { padding: .4rem 0; border-top: 1px solid #f1f5f9; }
-        .cfx-widget li:first-child { border-top: 0; }
-        .cfx-widget .cfx-w-detail { color: #6b7280; font-size: .85rem; display: block; }
-        .cfx-widget .cfx-w-actions { margin-top: .75rem; display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
-        .cfx-widget .cfx-w-params { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .5rem; }
-        .cfx-widget .cfx-w-param { display: inline-flex; align-items: center; gap: .35rem; padding: .2rem .55rem; border: 1px solid #e5e7eb; border-radius: 999px; font-size: .75rem; color: #374151; background: #f8fafc; }
-        .cfx-widget .cfx-w-dot { width: .5rem; height: .5rem; border-radius: 999px; display: inline-block; }
-        .cfx-widget .cfx-w-dot-ok { background: #16a34a; }
-        .cfx-widget .cfx-w-dot-warn { background: #d97706; }
-        .cfx-widget .cfx-w-dot-fail { background: #dc2626; }
-        .cfx-widget .cfx-w-plan { margin-top: .75rem; padding: .625rem .75rem; border-left: 3px solid #cbd5e1; background: #f8fafc; border-radius: 4px; }
+
+        .cfx-widget .cfx-w-body { display: flex; flex-wrap: wrap; gap: 2rem; align-items: flex-start; }
+        .cfx-widget .cfx-w-ring { flex: 0 0 auto; width: 190px; max-width: 45vw; }
+        .cfx-widget .cfx-w-ring svg { display: block; width: 100%; height: auto; }
+        {# Liczby wewnątrz rysunku są w jednostkach pola (220), nie w rem: SVG skaluje się
+           do szerokości kolumny, więc rem dawałby inny rozmiar przy każdej szerokości. #}
+        .cfx-widget .cfx-w-ring-main { font-size: 56px; font-weight: 600; }
+        .cfx-widget .cfx-w-ring-scale { font-size: 19px; fill: #6b7280; }
+        .cfx-widget .cfx-w-rest { flex: 1 1 300px; min-width: 0; }
+
+        .cfx-widget .cfx-w-counts { display: flex; flex-wrap: wrap; gap: 2rem; margin: 0 0 1.25rem; }
+        .cfx-widget .cfx-w-count b { display: block; font-size: var(--tblr-font-size-h1, 1.6rem); font-weight: 600; line-height: 1.1; font-variant-numeric: tabular-nums; }
+        .cfx-widget .cfx-w-count span { display: block; font-size: var(--tblr-font-size-h5, .75rem); font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: #6b7280; }
+        .cfx-widget .cfx-w-count-ok b { color: #15803d; }
+        .cfx-widget .cfx-w-count-warn b { color: #a16207; }
+        .cfx-widget .cfx-w-count-fail b { color: #b91c1c; }
+        {# Zero uwag i zero awarii przygaszamy: zero nie jest wiadomością, tylko jej brakiem. #}
+        .cfx-widget .cfx-w-count-zero b { color: #9ca3af; }
+
+        .cfx-widget .cfx-w-problems { margin: 0; padding: 0; list-style: none; }
+        .cfx-widget .cfx-w-problems li { display: flex; flex-wrap: wrap; gap: .6rem; align-items: baseline; padding: .5rem 0; border-top: 1px solid #f1f5f9; }
+        .cfx-widget .cfx-w-problems li:first-child { border-top: 0; }
+        .cfx-widget .cfx-w-problems strong { font-weight: 600; }
+        .cfx-widget .cfx-w-more { margin: .6rem 0 0; color: #6b7280; font-size: var(--tblr-font-size-h5, .75rem); }
+
+        .cfx-widget .cfx-w-areas { display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; margin: 1.25rem 0 0; padding: 0; list-style: none; font-size: var(--tblr-font-size-h5, .75rem); }
+        .cfx-widget .cfx-w-areas li { display: inline-flex; align-items: center; gap: .4rem; }
+        .cfx-widget .cfx-w-dot { width: .6rem; height: .6rem; border-radius: 999px; display: inline-block; flex: 0 0 auto; }
+        .cfx-widget .cfx-w-areas b { font-weight: 600; font-variant-numeric: tabular-nums; }
+
+        {# Zachęta do progu płatnego. Stoi na miejscu, w którym na Free nie ma oceny,
+           więc mówi o tym, czego tam brakuje — a nie o cenniku w oderwaniu od ekranu. #}
+        .cfx-widget .cfx-w-upsell { border-left: 3px solid #206bc4; background: #f4f8fd; padding: .875rem 1.125rem; border-radius: 0 4px 4px 0; }
+        .cfx-widget .cfx-w-upsell h3 { font-size: var(--tblr-font-size-h3, 1rem); font-weight: 600; margin: 0 0 .5rem; }
+        .cfx-widget .cfx-w-upsell ul { margin: 0 0 .875rem; padding: 0; list-style: none; }
+        .cfx-widget .cfx-w-upsell li { padding: .15rem 0 .15rem 1.25rem; position: relative; }
+        .cfx-widget .cfx-w-upsell li:before { content: '+'; position: absolute; left: .2rem; color: #206bc4; font-weight: 700; }
+
+        .cfx-widget .cfx-w-actions { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; margin: 1.5rem 0 0; }
+        .cfx-widget .cfx-w-poll { margin: .875rem 0 0; color: #9ca3af; font-size: var(--tblr-font-size-h6, .625rem); }
     </style>
 
     <div class="cfx-w-head">
@@ -43,56 +87,150 @@
         {% endif %}
     </div>
 
+    {% set ring = score ? score.ring|default([]) : [] %}
+
     {% if not connected %}
-        <p class="cfx-w-note">{{ 'calmfox_watch.widget.not_connected'|trans }}</p>
+        {#
+            Pierścień zastępczy pokazuje KSZTAŁT tego, co dochodzi po połączeniu, i nie
+            udaje pomiaru: same tory, bez liczby w środku.
+        #}
+        <div class="cfx-w-body">
+            <div class="cfx-w-ring">
+                <svg viewBox="0 0 220 220" aria-hidden="true">
+                    {% for seg in placeholder_ring %}
+                        <path d="{{ seg.d }}" fill="none" stroke="#e5e7eb" stroke-width="22"
+                              stroke-linecap="round" stroke-dasharray="2 7" />
+                    {% endfor %}
+                </svg>
+            </div>
+            <div class="cfx-w-rest">
+                <div class="cfx-w-upsell">
+                    <h3>{{ 'calmfox_watch.widget.connect_heading'|trans }}</h3>
+                    <ul>
+                        <li>{{ 'calmfox_watch.widget.connect_benefit_alert'|trans }}</li>
+                        <li>{{ 'calmfox_watch.widget.connect_benefit_history'|trans }}</li>
+                        <li>{{ 'calmfox_watch.widget.connect_benefit_score'|trans }}</li>
+                    </ul>
+                    <a class="ui primary button btn btn-primary" href="{{ screen_url }}">{{ 'calmfox_watch.widget.connect_cta'|trans }}</a>
+                </div>
+            </div>
+        </div>
     {% else %}
-        <p class="cfx-w-note">
-            {{ 'calmfox_watch.widget.counts'|trans({'%ok%': summary.counts.ok, '%warn%': summary.counts.warn, '%fail%': summary.counts.fail}) }}
-            {% if last_poll_at %}{{ 'calmfox_watch.widget.last_poll'|trans({'%at%': last_poll_at|date('Y-m-d H:i')}) }}{% endif %}
-        </p>
-
-        {% if summary.problems is empty %}
-            <p class="cfx-w-note">{{ 'calmfox_watch.widget.all_good'|trans }}</p>
-        {% else %}
-            <ul>
-                {% for problem in summary.problems %}
-                    <li>
-                        <span class="cfx-w-badge cfx-w-{{ problem.status }}">{{ ('calmfox_watch.admin.status_' ~ problem.status)|trans }}</span>
-                        <strong>{{ problem.label ?? problem.id }}</strong>
-                        {% if problem.detail %}<span class="cfx-w-detail">{{ problem.detail }}</span>{% endif %}
-                    </li>
-                {% endfor %}
-            </ul>
-            {% if summary.total > summary.problems|length %}
-                <p class="cfx-w-note">{{ 'calmfox_watch.widget.more'|trans({'%count%': summary.total - summary.problems|length}) }}</p>
-            {% endif %}
-        {% endif %}
-
-        {# Parametry monitoringu: co w tym sklepie w ogóle pilnujemy. Bez tej listy
-           „nic nie wymaga uwagi" nie mówi, CZEGO nic nie wymaga. #}
-        {% if checks is not empty %}
-            <p class="cfx-w-note">{{ 'calmfox_watch.widget.params'|trans }}</p>
-            <div class="cfx-w-params">
-                {% for check in checks %}
-                    <span class="cfx-w-param" title="{{ check.detail ?? '' }}">
-                        <span class="cfx-w-dot cfx-w-dot-{{ check.status }}"></span>{{ check.label ?? check.id }}
-                    </span>
-                {% endfor %}
+        <div class="cfx-w-body">
+            {#
+                Pierścień: najpierw wszystkie tory („ile mogło być"), potem wypełnienia na
+                wierzchu — inaczej łuk sąsiada przykrywałby początek następnego. Geometrię
+                liczy ScoreRing w rdzeniu pakietu, tu zostaje samo rysowanie, bez JavaScriptu.
+            #}
+            <div class="cfx-w-ring">
+                {% if ring is empty %}
+                    {# Free: oceny nie ma, więc jej miejsce zajmuje tor bez wypełnienia. #}
+                    <svg viewBox="0 0 220 220" aria-hidden="true">
+                        {% for seg in placeholder_ring %}
+                            <path d="{{ seg.d }}" fill="none" stroke="#e5e7eb" stroke-width="22"
+                                  stroke-linecap="round" stroke-dasharray="2 7" />
+                        {% endfor %}
+                    </svg>
+                {% else %}
+                    <svg viewBox="0 0 220 220" role="img"
+                         aria-label="{{ 'calmfox_watch.widget.ring_label'|trans({'%score%': score.overall}) }}">
+                        {% for seg in ring %}
+                            {# Obszar niezmierzony ma tor kreskowany: od razu widać, że tam nie mierzymy. #}
+                            <path d="{{ seg.d }}" fill="none" stroke="#e5e7eb" stroke-width="22" stroke-linecap="round"
+                                  {% if not seg.measured %}stroke-dasharray="2 7"{% endif %} />
+                        {% endfor %}
+                        {% for seg in ring %}
+                            {% if seg.fill > 0 %}
+                                <path d="{{ seg.d }}" fill="none" stroke="{{ seg.color }}" stroke-width="22"
+                                      stroke-linecap="round" stroke-dasharray="{{ seg.fill }} {{ seg.length + 1 }}" />
+                            {% endif %}
+                        {% endfor %}
+                        {# Liczba i skala w DWÓCH wierszach: jeden wiersz „100 na 100" centruje się
+                           jako całość, więc sama liczba uciekałaby w lewo od środka pierścienia. #}
+                        <text x="110" y="116" text-anchor="middle" class="cfx-w-ring-main"
+                              fill="{{ {'ok': '#15803d', 'warn': '#a16207', 'bad': '#b91c1c'}[score.tone]|default('#374151') }}"
+                        >{{ score.overall }}</text>
+                        <text x="110" y="142" text-anchor="middle" class="cfx-w-ring-scale">{{ 'calmfox_watch.widget.ring_scale'|trans }}</text>
+                    </svg>
+                {% endif %}
             </div>
-        {% endif %}
 
-        {% if is_free %}
-            <div class="cfx-w-plan">
-                <span class="cfx-w-detail">{{ 'calmfox_watch.widget.free_note'|trans }}</span>
+            <div class="cfx-w-rest">
+                <div class="cfx-w-counts">
+                    {% for row in [
+                        {'key': 'ok', 'label': 'calmfox_watch.widget.count_ok', 'class': 'cfx-w-count-ok'},
+                        {'key': 'warn', 'label': 'calmfox_watch.widget.count_warn', 'class': 'cfx-w-count-warn'},
+                        {'key': 'fail', 'label': 'calmfox_watch.widget.count_fail', 'class': 'cfx-w-count-fail'},
+                    ] %}
+                        {% set howMany = summary.counts[row.key]|default(0) %}
+                        <span class="cfx-w-count {{ row.class }}{{ 0 == howMany ? ' cfx-w-count-zero' : '' }}">
+                            <b>{{ howMany }}</b>
+                            <span>{{ row.label|trans }}</span>
+                        </span>
+                    {% endfor %}
+                </div>
+
+                {% if summary.problems is empty %}
+                    <p>{{ 'calmfox_watch.widget.all_good'|trans }}</p>
+                {% else %}
+                    {# Same nazwy, bez opisów: kafelek mówi CO, a nie dlaczego. #}
+                    <ul class="cfx-w-problems">
+                        {% for problem in summary.problems %}
+                            <li>
+                                <span class="cfx-w-badge cfx-w-{{ problem.status }}">{{ ('calmfox_watch.admin.status_' ~ problem.status)|trans }}</span>
+                                <strong>{{ problem.label ?? problem.id }}</strong>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    {% if summary.total > summary.problems|length %}
+                        <p class="cfx-w-more">{{ 'calmfox_watch.widget.more'|trans({'%count%': summary.total - summary.problems|length}) }}</p>
+                    {% endif %}
+                {% endif %}
+
+                {% if ring is not empty %}
+                    <ul class="cfx-w-areas">
+                        {% for seg in ring %}
+                            <li>
+                                <span class="cfx-w-dot" style="background: {{ seg.measured ? seg.color : '#cbd5e1' }}"></span>
+                                {{ seg.label }}
+                                <b>{{ seg.measured ? seg.score : '—' }}</b>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    {#
+                        Zachęta stoi TU, obok pustego pierścienia, a nie w oderwaniu od ekranu:
+                        klient widzi dokładnie to miejsce, w którym oceny brakuje. Korzyści są
+                        sprawdzalne w kodzie huba, nie wymyślone — sonda na Free chodzi co 300 s,
+                        na Start co 60 s, a ocena i dobowe raporty wchodzą od Start. Ceny w
+                        pakiecie NIE MA świadomie: cennik się zmienia, a wersje pakietu zostają
+                        u klientów na długo.
+                    #}
+                    <div class="cfx-w-upsell">
+                        <h3>{{ 'calmfox_watch.widget.upsell_heading'|trans }}</h3>
+                        <ul>
+                            <li>{{ 'calmfox_watch.widget.upsell_benefit_score'|trans }}</li>
+                            <li>{{ 'calmfox_watch.widget.upsell_benefit_interval'|trans }}</li>
+                            <li>{{ 'calmfox_watch.widget.upsell_benefit_reports'|trans }}</li>
+                        </ul>
+                        <a class="ui primary button btn btn-primary" href="{{ plan_url }}" target="_blank" rel="noopener">{{ 'calmfox_watch.widget.upsell_cta'|trans }}</a>
+                    </div>
+                {% endif %}
             </div>
-        {% endif %}
+        </div>
     {% endif %}
 
+    {# Dwa wyjścia i nic więcej: szczegóły sprawdzeń są na ekranie pakietu, historia
+       i incydenty w panelu. Kafelek ma do nich prowadzić, nie je zastępować. #}
     <p class="cfx-w-actions">
         <a class="ui button btn btn-secondary" href="{{ screen_url }}">{{ 'calmfox_watch.widget.open'|trans }}</a>
-        {% if connected and is_free %}
-            <a class="ui primary button btn btn-primary" href="{{ plan_url }}" target="_blank" rel="noopener">{{ 'calmfox_watch.widget.plans'|trans }}</a>
+        {% if connected %}
+            <a class="ui primary button btn btn-primary" href="{{ panel_site_url }}" target="_blank" rel="noopener">{{ 'calmfox_watch.widget.panel'|trans }}</a>
         {% endif %}
     </p>
+
+    {% if connected and last_poll_at %}
+        <p class="cfx-w-poll">{{ 'calmfox_watch.widget.last_poll'|trans({'%at%': last_poll_at|date('Y-m-d H:i')}) }}</p>
+    {% endif %}
     </div>
 </div>

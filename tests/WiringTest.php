@@ -97,4 +97,44 @@ final class WiringTest extends TestCase
         self::assertSame('%kernel.bundles%', $services['calmfox_watch.menu_listener']['arguments'][0],
             'pozycja w menu dobiera nazwę ikony po wersji Syliusa, a tę rozpoznaje po bundlach');
     }
+
+    /**
+     * Zgłoszone z żywego sklepu na Syliusie 2.2: pakiet deklarował `sylius_ui.events`
+     * wszędzie tam, gdzie widział SyliusUiBundle, a ten bundel jest wpięty także w 2.x —
+     * tyle że bez opcji `events`. Kontener przestawał się budować, więc padał CAŁY sklep,
+     * nie sam kafelek. Wersji Syliusa nie da się tu odczytać, rozstrzyga skład bundli:
+     * bundel z hookami ma wyłącznie 2.x.
+     */
+    public function testOneXDashboardConfigIsDeclaredOnlyWhereTwoXHooksAreAbsent(): void
+    {
+        $extension = self::source('src/DependencyInjection/CalmfoxWatchExtension.php');
+
+        self::assertMatchesRegularExpression(
+            "/if \\(isset\\(\\\$bundles\\['SyliusUiBundle'\\]\\)\s*&&\s*!isset\\(\\\$bundles\\['SyliusTwigHooksBundle'\\]\\)\\)/",
+            $extension,
+            'konfiguracja pulpitu z 1.x nie ma prawa pójść do sklepu, który ma bundel z hookami 2.x'
+        );
+    }
+
+    /**
+     * Kafelek wpina się w cudzy pulpit, więc szerokość i wcięcie poziome ustawia motyw
+     * przez `container-xl`. Własne `max-width`, `padding` czy `width` na tej samej klasie
+     * cofają to (ten arkusz stoi za arkuszem motywu, więc wygrywa kolejnością) i karta
+     * rozjeżdża się względem kafli pod nią. Pakiet dokłada wyłącznie odstęp pionowy.
+     */
+    public function testWidgetLeavesHorizontalGeometryToTheTheme(): void
+    {
+        $widget = self::source('src/Resources/views/widget.html.twig');
+
+        self::assertStringContainsString('class="cfx-wrap container-xl"', $widget,
+            'kafelek trzyma się kontenera motywu, bo hook 2.x renderuje go poza kolumną treści');
+
+        self::assertSame(1, preg_match('/^\s*\.cfx-wrap\s*\{([^}]*)\}/m', $widget, $regula),
+            'nie znaleziono reguły .cfx-wrap');
+
+        foreach (['max-width', 'min-width', 'width', 'padding', 'margin-left', 'margin-right', 'margin-inline'] as $wlasciwosc) {
+            self::assertStringNotContainsString($wlasciwosc, $regula[1],
+                sprintf('.cfx-wrap ustawia „%s” i nadpisuje tym geometrię motywu', $wlasciwosc));
+        }
+    }
 }
