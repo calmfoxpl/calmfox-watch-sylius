@@ -33,18 +33,23 @@ of the whole platform, and it decides what is available. Two remarks:
 
 ## Installation
 
-The package is not published in the public Composer package index
-(Packagist), so a plain `composer require calmfox/watch-sylius` ends with a
-"could not be found" error. It is installed from the
+The package is available in the public Composer package index (Packagist) as
+`calmfox/watch-sylius`.
+
+### 1. Installing the package
+
+```bash
+composer require calmfox/watch-sylius
+```
+
+Updating: `composer update calmfox/watch-sylius`.
+
+Where a store cannot use Packagist, the package is installed from the
 `calmfox-watch-sylius.zip` archive provided by the Calmfox Watch panel
-(Integrations, the "Download for Sylius" button). The archive contains a
-single directory: `calmfox-watch/`.
-
-### 1. Uploading the archive
-
-The recommended route goes through Composer: it rebuilds the autoloader and
-takes care of the package's dependencies exactly as it would for a package
-downloaded from Packagist.
+(Integrations, the "Download for Sylius" button). The archive contains a single
+directory: `calmfox-watch/`. Even then it is best to go through Composer: it
+rebuilds the autoloader and takes care of the package's dependencies exactly as
+it would for a package downloaded from Packagist.
 
 ```bash
 mkdir -p packages && unzip calmfox-watch-sylius.zip -d packages
@@ -65,7 +70,7 @@ Three places where it is easy to trip up:
   version from a repository tag, and the archive has no tag), so a `path`
   repository reports it as `dev-main`.
 
-Updating: unpack the newer archive into the same place and run
+Updating from the archive: unpack the newer one into the same place and run
 `composer update calmfox/watch-sylius`.
 
 Deployments with no Composer on the server can unpack the archive into the

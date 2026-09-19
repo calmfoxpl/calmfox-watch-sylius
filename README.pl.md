@@ -32,16 +32,22 @@ metapakietem całej platformy i to on rozstrzyga, co jest dostępne. Dwie uwagi:
 
 ## Instalacja
 
-Pakiet nie jest opublikowany w publicznym katalogu pakietów Composera
-(Packagist), więc samo `composer require calmfox/watch-sylius` kończy się błędem
-„could not be found". Instaluje się go z paczki `calmfox-watch-sylius.zip`, którą
-podaje panel Calmfox Watch (Integracje, przycisk „Pobierz dla Sylius").
-W paczce jest jeden katalog: `calmfox-watch/`.
+Pakiet jest w publicznym katalogu pakietów Composera (Packagist) jako
+`calmfox/watch-sylius`.
 
-### 1. Wgranie paczki
+### 1. Instalacja pakietu
 
-Zalecana droga prowadzi przez Composera: przelicza autoloader i pilnuje
-zależności pakietu tak samo, jak przy pakiecie pobranym z Packagista.
+```bash
+composer require calmfox/watch-sylius
+```
+
+Aktualizacja: `composer update calmfox/watch-sylius`.
+
+Tam, gdzie sklep nie może korzystać z Packagista, pakiet instaluje się z paczki
+`calmfox-watch-sylius.zip`, którą podaje panel Calmfox Watch (Integracje, przycisk
+„Pobierz dla Sylius"). W paczce jest jeden katalog: `calmfox-watch/`. Także wtedy
+najlepiej iść przez Composera: przelicza autoloader i pilnuje zależności pakietu
+tak samo, jak przy pakiecie pobranym z Packagista.
 
 ```bash
 mkdir -p pakiety && unzip calmfox-watch-sylius.zip -d pakiety
@@ -60,7 +66,7 @@ Trzy miejsca, w których łatwo się potknąć:
   nie ma pola `version` (Composer wylicza wersję z tagu repozytorium, a paczka
   tagu nie ma), więc repozytorium typu `path` melduje ją jako `dev-main`.
 
-Aktualizacja: rozpakowanie nowszej paczki w to samo miejsce i
+Aktualizacja z paczki: rozpakowanie nowszej w to samo miejsce i
 `composer update calmfox/watch-sylius`.
 
 Wdrożenia, w których na serwerze nie ma Composera, mogą rozpakować paczkę do
