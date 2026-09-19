@@ -1,86 +1,95 @@
-# Calmfox Watch dla Sylius
+# Calmfox Watch for Sylius
 
-Pakiet monitoringu wnętrza sklepu Sylius. Wystawia jeden sekretny adres
-kontrolny, który odpytuje monitoring Calmfox Watch, i realizuje ten sam
-kontrakt, co wtyczka WordPressa (`WTYCZKI.md` w repozytorium Calmfox Watch):
-te same identyfikatory sprawdzeń, ten sam kształt odpowiedzi, ten sam podpis.
+**English** · [Polski](README.pl.md)
 
-Model jest „pull": pakiet nie wysyła nic z siebie poza rejestracją, parowaniem
-i rozłączeniem. Reszta to odpowiedzi na pytania monitoringu.
+A package that monitors the internals of a Sylius store. It exposes a single
+secret health endpoint, polled by the Calmfox Watch monitoring, and implements
+the same contract as the WordPress plugin and the Magento and Neos packages:
+the same response shape, the same signature, the same pairing flow.
 
-## Wymagania
+The model is "pull": the package sends nothing on its own apart from
+registration, pairing and disconnecting. Everything else is an answer to a
+question asked by the monitoring.
 
-| Składnik | Zakres |
+## Requirements
+
+| Component | Range |
 | --- | --- |
-| PHP | 8.1 i wyżej |
-| Symfony | 6.4 albo 7.x |
-| Sylius | 1.12 i wyżej, w tym 2.x |
+| PHP | 8.1 and up |
+| Symfony | 6.4 or 7.x |
+| Sylius | 1.12 and up, including 2.x |
 
-Zakres Syliusa zapisany jest jako `"sylius/sylius": "^1.12 || ^2.0"`, czyli
-tak, jak robią to pozostałe pakiety w tym ekosystemie: `sylius/sylius` jest
-metapakietem całej platformy i to on rozstrzyga, co jest dostępne. Dwie uwagi:
+The Sylius range is declared as `"sylius/sylius": "^1.12 || ^2.0"`, the same
+way other packages in this ecosystem do it: `sylius/sylius` is the metapackage
+of the whole platform, and it decides what is available. Two remarks:
 
-- Sylius 2.x wymaga PHP 8.2, więc na PHP 8.1 Composer rozwiąże zależność
-  do gałęzi 1.13. To nie jest błąd konfiguracji, tylko konsekwencja obu
-  zakresów naraz.
-- Miejsca, w których 1.x i 2.x różnią się API (menu panelu, nazwa layoutu
-  administracyjnego), są w pakiecie napisane obronnie: przy nieznanej
-  strukturze pakiet nie dokłada pozycji w menu, zamiast wywalać panel.
-  Adres ekranu i polecenia CLI działają wtedy tak samo.
+- Sylius 2.x requires PHP 8.2, so on PHP 8.1 Composer resolves the dependency
+  to the 1.13 branch. That is not a configuration error, just the consequence
+  of both ranges applying at once.
+- The places where the 1.x and 2.x APIs differ (the admin menu, the name of
+  the admin layout) are written defensively: when the structure is unknown,
+  the package does not add a menu item instead of bringing the Sylius admin
+  down. The screen address and the CLI commands keep working the same way.
 
-## Instalacja
+## Installation
 
-Pakiet nie jest opublikowany w publicznym katalogu pakietów Composera
-(Packagist), więc samo `composer require calmfox/watch-sylius` kończy się błędem
-„could not be found". Instaluje się go z paczki `calmfox-watch-sylius.zip`, którą
-podaje panel Calmfox Watch (Integracje, przycisk „Pobierz dla Sylius").
-W paczce jest jeden katalog: `calmfox-watch/`.
+The package is not published in the public Composer package index
+(Packagist), so a plain `composer require calmfox/watch-sylius` ends with a
+"could not be found" error. It is installed from the
+`calmfox-watch-sylius.zip` archive provided by the Calmfox Watch panel
+(Integrations, the "Download for Sylius" button). The archive contains a
+single directory: `calmfox-watch/`.
 
-### 1. Wgranie paczki
+### 1. Uploading the archive
 
-Zalecana droga prowadzi przez Composera: przelicza autoloader i pilnuje
-zależności pakietu tak samo, jak przy pakiecie pobranym z Packagista.
+The recommended route goes through Composer: it rebuilds the autoloader and
+takes care of the package's dependencies exactly as it would for a package
+downloaded from Packagist.
 
 ```bash
-mkdir -p pakiety && unzip calmfox-watch-sylius.zip -d pakiety
-composer config repositories.calmfox-watch '{"type":"path","url":"./pakiety/calmfox-watch","options":{"symlink":false}}'
+mkdir -p packages && unzip calmfox-watch-sylius.zip -d packages
+composer config repositories.calmfox-watch '{"type":"path","url":"./packages/calmfox-watch","options":{"symlink":false}}'
 composer require calmfox/watch-sylius:@dev
 ```
 
-Trzy miejsca, w których łatwo się potknąć:
+Three places where it is easy to trip up:
 
-- **`"symlink": false`** każe Composerowi skopiować pliki. Bez tego katalog
-  w `vendor` jest wyłącznie dowiązaniem do `pakiety` i zniknie razem z nim.
-- **Rozpakowany katalog zostaje w projekcie** (i w repozytorium, jeżeli wdrożenie
-  idzie z gita). Composer czyta go przy każdym `composer install`, więc jego
-  skasowanie wywróci następne wdrożenie.
-- **`@dev` przy nazwie pakietu jest konieczne.** `composer.json` paczki świadomie
-  nie ma pola `version` (Composer wylicza wersję z tagu repozytorium, a paczka
-  tagu nie ma), więc repozytorium typu `path` melduje ją jako `dev-main`.
+- **`"symlink": false`** tells Composer to copy the files. Without it the
+  directory in `vendor` is only a symlink to `packages` and disappears
+  together with it.
+- **The unpacked directory stays in the project** (and in the repository, if
+  you deploy from git). Composer reads it on every `composer install`, so
+  deleting it will break the next deployment.
+- **The `@dev` next to the package name is required.** The archive's
+  `composer.json` deliberately has no `version` field (Composer derives the
+  version from a repository tag, and the archive has no tag), so a `path`
+  repository reports it as `dev-main`.
 
-Aktualizacja: rozpakowanie nowszej paczki w to samo miejsce i
+Updating: unpack the newer archive into the same place and run
 `composer update calmfox/watch-sylius`.
 
-Wdrożenia, w których na serwerze nie ma Composera, mogą rozpakować paczkę do
-katalogu projektu i dopisać przestrzeń nazw do `composer.json` aplikacji:
+Deployments with no Composer on the server can unpack the archive into the
+project directory and add the namespace to the application's `composer.json`:
 
 ```json
 "autoload": {
     "psr-4": {
-        "Calmfox\\WatchBundle\\": "pakiety/calmfox-watch/src/"
+        "Calmfox\\WatchBundle\\": "packages/calmfox-watch/src/"
     }
 }
 ```
 
-Autoloader trzeba wtedy przeliczyć tam, gdzie Composer jest (`composer dump-autoload`),
-i wysłać razem z `vendor`. Trasy, szablony i tłumaczenia pakietu leżą w `src/Resources`,
-czyli w katalogu klasy pakietu, więc odwołania `@CalmfoxWatchBundle/...` z kolejnych
-kroków działają przy obu drogach tak samo.
+The autoloader then has to be rebuilt wherever Composer is available
+(`composer dump-autoload`) and shipped together with `vendor`. The package's
+routes, templates and translations live in `src/Resources`, that is, in the
+directory of the bundle class, so the `@CalmfoxWatchBundle/...` references in
+the following steps work the same way with either route.
 
-### 2. Rejestracja pakietu
+### 2. Registering the bundle
 
-`config/bundles.php` (Symfony Flex tego nie dopisze: wpis powstaje z przepisu
-Flex, a przepisy są publikowane tylko dla pakietów z publicznego katalogu):
+`config/bundles.php` (Symfony Flex will not add this for you: the entry comes
+from a Flex recipe, and recipes are published only for packages from the
+public index):
 
 ```php
 return [
@@ -89,7 +98,7 @@ return [
 ];
 ```
 
-### 3. Trasy
+### 3. Routes
 
 `config/routes/calmfox_watch.yaml`:
 
@@ -98,234 +107,245 @@ calmfox_watch:
     resource: '@CalmfoxWatchBundle/Resources/config/routes.yaml'
 ```
 
-Powstają dwie rzeczy: publiczny adres kontrolny `/calmfox-watch/health`
-oraz ekran w panelu pod `/admin/calmfox-watch`.
+This creates two things: the public health endpoint `/calmfox-watch/health`
+and a screen in the Sylius admin under `/admin/calmfox-watch`.
 
-### 4. Dostęp do adresu kontrolnego
+### 4. Access to the health endpoint
 
-Adres kontrolny MUSI być publiczny. To monitoring nas odpytuje, a nie
-odwrotnie, i nie ma sesji, którą mógłby się wykazać. Autoryzacją jest sekret
-w parametrze `key`, porównywany funkcją `hash_equals`.
+The health endpoint MUST be public. The monitoring polls us, not the other
+way round, and it has no session to identify itself with. Authorisation is
+the secret in the `key` parameter, compared with `hash_equals`.
 
-W `config/packages/security.yaml`, w `access_control`, **przed** regułami
-Syliusa:
+In `config/packages/security.yaml`, under `access_control`, **before** the
+Sylius rules:
 
 ```yaml
 security:
     access_control:
         - { path: "^/calmfox-watch/health", roles: PUBLIC_ACCESS }
-        # ... dotychczasowe reguły Syliusa ...
+        # ... the existing Sylius rules ...
 ```
 
-Na Syliusie 1.12 z Symfony 5.4 rola nazywa się `IS_AUTHENTICATED_ANONYMOUSLY`.
+On Sylius 1.12 with Symfony 5.4 the role is called
+`IS_AUTHENTICATED_ANONYMOUSLY`.
 
-Sprawdź też, czy zapora sieciowa albo reguły serwera WWW nie blokują tej
-ścieżki. Ekran w panelu i polecenie `calmfox:watch:status` wykonują
-samokontrolę pętlą zwrotną i powiedzą wprost, jeżeli adres jest niedostępny
-z samego serwera.
+Also check that a firewall or web server rules do not block this path. The
+screen in the Sylius admin and the `calmfox:watch:status` command run a
+loopback self-check and will say plainly if the endpoint cannot be reached
+from the server itself.
 
-### 5. Połączenie z panelem
+### 5. Connecting to the Calmfox Watch panel
 
-Najkrócej: panel administracyjny sklepu, pozycja **Calmfox Watch** w menu głównym,
-przycisk „Połącz przez watch.calmfox.net". Przeniesie Cię do panelu (logowanie
-albo założenie konta, wybór organizacji), a potem wróci do sklepu z kluczem
-instalacyjnym i połączy sklep bez przepisywania czegokolwiek. Sklep nie musi
-wcześniej istnieć w panelu.
+The shortest way: the store's Sylius admin, the **Calmfox Watch** item in the
+main menu, the "Connect through watch.calmfox.net" button. It takes you to
+the Calmfox Watch panel (sign in or create an account, pick an organisation)
+and then returns to the store with the installation key and connects the
+store without you retyping anything. The store does not have to exist in the
+Calmfox Watch panel beforehand.
 
-Powrót jest chroniony znacznikiem jednorazowym (kwadrans), a panel wpuszcza
-wyłącznie adres powrotny na domenie łączonego sklepu, prowadzący do ekranu
-pakietu. Sklep z panelem administracyjnym na osobnej domenie tej drogi nie
-dostanie: przycisk się wtedy nie pokaże, a zostaje połączenie kluczem.
+The return is protected by a one-time token (valid for a quarter of an hour),
+and the Calmfox Watch panel only accepts a return address on the domain of
+the store being connected, leading to the package's screen. A store whose
+Sylius admin runs on a separate domain will not get this route: the button
+does not show up then, and pairing with the key remains.
 
-Dwie pozostałe drogi (obie z tego samego ekranu albo z wiersza poleceń):
+The two other ways (both available from the same screen or from the command
+line):
 
 ```bash
-# nowe konto w pakiecie Free
-bin/console calmfox:watch:register wlasciciel@sklep.pl
+# a new account on the Free plan
+bin/console calmfox:watch:register owner@shop.example
 
-# albo dopięcie do istniejącej strony w panelu (klucz z ekranu Integracje)
+# or attach to an existing site in the Calmfox Watch panel (key from the Integrations screen)
 bin/console calmfox:watch:pair fxp_live_0123456789abcdef
 ```
 
-W CLI router nie zna adresu sklepu, więc albo ustaw `framework.router.default_uri`,
-albo podaj `calmfox_watch.site_url`. Oba polecenia wypisują adres kontrolny,
-który zgłaszają do panelu, więc od razu widać, czy jest poprawny.
+In the CLI the router does not know the store address, so either set
+`framework.router.default_uri` or provide `calmfox_watch.site_url`. Both
+commands print the health endpoint they report to the Calmfox Watch panel, so
+you can see straight away whether it is correct.
 
-## Konfiguracja
+## Configuration
 
-Wszystko ma sensowne wartości domyślne. `config/packages/calmfox_watch.yaml`
-potrzebny jest tylko wtedy, gdy coś odbiega od standardu:
+Everything has sensible defaults. `config/packages/calmfox_watch.yaml` is
+needed only when something deviates from the standard:
 
 ```yaml
 calmfox_watch:
-    # Adres API. Zmienna środowiskowa: CALMFOX_WATCH_API_URL.
+    # API address. Environment variable: CALMFOX_WATCH_API_URL.
     api_url: 'https://watch.calmfox.net'
 
-    # Katalog stanu. Zmienna środowiskowa: CALMFOX_WATCH_STATE_DIR.
+    # State directory. Environment variable: CALMFOX_WATCH_STATE_DIR.
     state_dir: '%kernel.project_dir%/var/calmfox-watch'
 
-    # Adres sklepu, używany w CLI i przez sprawdzenie HTTPS.
-    site_url: 'https://sklep.pl'
+    # Store address, used in the CLI and by the HTTPS check.
+    site_url: 'https://shop.example'
 
-    # Prefiks panelu, jeżeli zmieniałeś sylius_admin_path.
+    # Sylius admin prefix, if you changed sylius_admin_path.
     admin_path: 'admin'
 
-    # Kafelek z kondycją sklepu na pulpicie panelu. false zostawia pulpit nietknięty.
+    # Store health tile on the Sylius admin dashboard. false leaves the dashboard untouched.
     dashboard_widget: true
 
-    # Layout panelu. Nazwa różni się między Syliusem 1.x a 2.x.
+    # Sylius admin layout. The name differs between Sylius 1.x and 2.x.
     admin_layout: '@SyliusAdmin/layout.html.twig'
 
-    # Limit dysku konta hostingowego w GB. To samo ustawisz z ekranu w panelu
-    # i wtedy wartość z ekranu ma pierwszeństwo.
+    # Disk quota of the hosting account in GB. You can set the same thing from
+    # the screen in the Sylius admin, and then the value from the screen wins.
     disk_quota_gb: 20
 
     media_dir: '%kernel.project_dir%/public/media'
     mailer_dsn: '%env(MAILER_DSN)%'
-    elasticsearch_url: null          # puste = sklep go nie używa, check nie powstaje
+    elasticsearch_url: null          # empty = the store does not use it, the check is not created
     messenger_table: 'messenger_messages'
     failure_transports: ['failed']
-    heartbeat_interval: 600          # co ile sekund cron woła calmfox:watch:heartbeat
+    heartbeat_interval: 600          # how often, in seconds, cron calls calmfox:watch:heartbeat
     platform_package: 'sylius/sylius'
     composer_binary: 'composer'
 ```
 
-`api_url` i `state_dir` czytane są ze zmiennych środowiskowych już przy
-budowaniu kontenera, więc po ich zmianie wyczyść pamięć podręczną
+`api_url` and `state_dir` are read from environment variables already when
+the container is built, so clear the cache after changing them
 (`bin/console cache:clear`).
 
-### Layout, menu i kafelek na pulpicie
+### Layout, menu and the dashboard tile
 
-Sylius 1.x i 2.x mają inny szablon bazowy panelu. Sprawdź, jak nazywa się
-w Twojej wersji (`bin/console debug:twig`, albo katalog
-`vendor/sylius/sylius/src/Sylius/Bundle/AdminBundle/Resources/views`),
-i ustaw `calmfox_watch.admin_layout`.
+Sylius 1.x and 2.x have a different base template for the admin. Check what
+it is called in your version (`bin/console debug:twig`, or the
+`vendor/sylius/sylius/src/Sylius/Bundle/AdminBundle/Resources/views`
+directory) and set `calmfox_watch.admin_layout`.
 
-**Menu główne.** Pozycja „Calmfox Watch" dopina się przez zdarzenie
-`sylius.menu.admin.main` do MENU GŁÓWNEGO, zaraz pod pulpitem, a nie pod
-„Konfigurację": awaria ma być widoczna z każdego ekranu sklepu. Jeżeli Twoja
-wersja buduje menu inaczej, pozycja się nie pojawi, a ekran nadal działa pod
-adresem `/admin/calmfox-watch`.
+**Main menu.** The "Calmfox Watch" item is attached through the
+`sylius.menu.admin.main` event to the MAIN MENU, right below the dashboard,
+and not under "Configuration": an outage should be visible from every screen
+of the store. If your version builds the menu differently, the item will not
+appear, and the screen still works under `/admin/calmfox-watch`.
 
-**Kafelek na pulpicie.** Pulpit panelu dostaje skrót kondycji: status sekcji,
-liczby sprawdzeń i najwyżej trzy najpilniejsze problemy (awarie przed
-ostrzeżeniami), z odnośnikiem do pełnego ekranu. Wpinamy go sami, bez
-grzebania w konfiguracji sklepu: w Syliusie 1.x przez zdarzenie szablonu
-`sylius.admin.dashboard.content`, w 2.x przez hook
-`sylius_admin.dashboard.index.content`. Kafelek renderuje się podzapytaniem do
-akcji pakietu, z tym samym uprawnieniem i tą samą pamięcią podręczną co ekran,
-a błąd w nim nie ma prawa zatrzymać pulpitu. Wyłącza się jednym ustawieniem:
+**Dashboard tile.** The Sylius admin dashboard gets a health summary: section
+status, check counts and at most three of the most urgent problems (failures
+before warnings), with a link to the full screen. We hook it in ourselves,
+with no digging in the store's configuration: in Sylius 1.x through the
+`sylius.admin.dashboard.content` template event, in 2.x through the
+`sylius_admin.dashboard.index.content` hook. The tile is rendered by a
+sub-request to the package's action, with the same permission and the same
+cache as the screen, and an error inside it is never allowed to stop the
+dashboard. It is switched off with a single setting:
 `calmfox_watch.dashboard_widget: false`.
 
-## Stan, sekret i wdrożenia z katalogiem na wydanie
+## State, the secret and release-directory deployments
 
-Stan (sekret adresu kontrolnego, znacznik parowania, historia wersji, znacznik
-bicia serca, policzone aktualizacje) leży w **pliku**, nie w bazie:
-`var/calmfox-watch/state.json`, prawa 600, zapis atomowy.
+The state (the health endpoint secret, the pairing nonce, the version
+history, the heartbeat marker, the counted updates) lives in a **file**, not
+in the database: `var/calmfox-watch/state.json`, mode 600, atomic writes.
 
-Powód jest w kontrakcie: przy padniętej bazie adres kontrolny ma odpowiedzieć
-`db: fail` i kodem 503, a nie zamilknąć. To jedyny moment, w którym monitoring
-naprawdę zarabia.
+The reason is in the contract: when the database is down, the health endpoint
+has to answer `db: fail` with a 503 code, not go silent. That is the one
+moment when monitoring really earns its keep.
 
-> **Uwaga przy wdrożeniach typu „nowy katalog na każde wydanie"** (Deployer,
-> Capistrano, symlink `current`): katalog stanu MUSI być współdzielony między
-> wydaniami. Inaczej każde wdrożenie tworzy nowy sekret, adres kontrolny
-> zapamiętany w panelu przestaje działać i monitoring zgłasza milczący sklep.
-> Historia zmian wersji też zaczyna się wtedy od zera.
+> **A note on "new directory for every release" deployments** (Deployer,
+> Capistrano, a `current` symlink): the state directory MUST be shared between
+> releases. Otherwise every deployment creates a new secret, the health
+> endpoint remembered by the Calmfox Watch panel stops working and the
+> monitoring reports a silent store. The version change history then also
+> starts from scratch.
 >
-> Dodaj `var/calmfox-watch` do katalogów współdzielonych, albo ustaw
-> `CALMFOX_WATCH_STATE_DIR=/var/www/sklep/shared/calmfox-watch`.
+> Add `var/calmfox-watch` to the shared directories, or set
+> `CALMFOX_WATCH_STATE_DIR=/var/www/shop/shared/calmfox-watch`.
 
-Wymiana sekretu (przycisk „Wymień klucz") działa z oknem 15 minut: nowy sekret
-obowiązuje od razu, poprzedni jest honorowany jeszcze kwadrans, więc nieudane
-przepięcie w panelu nie zrywa monitoringu.
+Replacing the secret (the "Replace the key" button) works with a 15-minute
+window: the new secret applies immediately, the previous one is honoured for
+another quarter of an hour, so a failed switch-over in the Calmfox Watch panel
+does not break the monitoring.
 
-## Zadania cykliczne
+## Scheduled tasks
 
-Sklep Sylius ma polecenia, które MUSZĄ chodzić regularnie, i pakiet nie zastąpi
-ich uruchamiania. Pilnuje natomiast, czy cron w ogóle żyje:
+A Sylius store has commands that MUST run regularly, and the package will not
+run them for you. What it does watch is whether cron is alive at all:
 
 ```cron
-# stan crona dla Calmfox Watch (tanie, samo zapisuje znacznik czasu)
-*/10 * * * * cd /var/www/sklep && php bin/console calmfox:watch:heartbeat -q
+# cron state for Calmfox Watch (cheap, it just writes a timestamp)
+*/10 * * * * cd /var/www/shop && php bin/console calmfox:watch:heartbeat -q
 
-# zaległe aktualizacje pakietów (raz na dobę wystarczy, potrzebuje sieci)
-15 3 * * *   cd /var/www/sklep && php bin/console calmfox:watch:updates -q
+# pending package updates (once a day is enough, needs network access)
+15 3 * * *   cd /var/www/shop && php bin/console calmfox:watch:updates -q
 
-# właściwe zadania sklepu
-*/5 * * * *  cd /var/www/sklep && php bin/console sylius:remove-expired-carts -q
-*/5 * * * *  cd /var/www/sklep && php bin/console sylius:cancel-unpaid-orders -q
-0 4 * * *    cd /var/www/sklep && php bin/console sylius:remove-expired-payments -q
+# the store's actual tasks
+*/5 * * * *  cd /var/www/shop && php bin/console sylius:remove-expired-carts -q
+*/5 * * * *  cd /var/www/shop && php bin/console sylius:cancel-unpaid-orders -q
+0 4 * * *    cd /var/www/shop && php bin/console sylius:remove-expired-payments -q
 ```
 
-Nazwy poleceń i ich dostępność zależą od wersji Syliusa. Sprawdź listę
-przez `bin/console list sylius`.
+Command names and their availability depend on the Sylius version. Check the
+list with `bin/console list sylius`.
 
-Konsument kolejek to osobna sprawa: powinien działać jako usługa systemowa
-(`messenger:consume async -vv` pod supervisorem albo systemd), a nie z crona.
-Sprawdzenie `messenger` pilnuje właśnie tego, czy działa.
+The queue consumer is a separate matter: it should run as a system service
+(`messenger:consume async -vv` under supervisor or systemd), not from cron.
+The `messenger` check watches precisely whether it is running.
 
-## Polecenia
+## Commands
 
-| Polecenie | Do czego |
+| Command | What it is for |
 | --- | --- |
-| `calmfox:watch:status` | Stan połączenia, adres kontrolny, obie sekcje sprawdzeń |
-| `calmfox:watch:register <email>` | Zakłada konto Free i łączy sklep |
-| `calmfox:watch:pair [token]` | Łączy z istniejącą stroną w panelu |
-| `calmfox:watch:disconnect` | Kończy monitoring wnętrza i mówi o tym panelowi |
-| `calmfox:watch:updates` | Liczy zaległe aktualizacje, do crona |
-| `calmfox:watch:heartbeat` | Znacznik dla sprawdzenia zadań cyklicznych, do crona |
-| `calmfox:watch:health [--section=security]` | Wypisuje payload lokalnie |
+| `calmfox:watch:status` | Connection state, health endpoint, both check sections |
+| `calmfox:watch:register <email>` | Creates a Free account and connects the store |
+| `calmfox:watch:pair [token]` | Connects to an existing site in the Calmfox Watch panel |
+| `calmfox:watch:disconnect` | Ends the internals monitoring and tells the Calmfox Watch panel about it |
+| `calmfox:watch:updates` | Counts pending updates, for cron |
+| `calmfox:watch:heartbeat` | Marker for the scheduled tasks check, for cron |
+| `calmfox:watch:health [--section=security]` | Prints the payload locally |
 
-## Co sprawdzamy
+## What we check
 
-### Sekcja `health` (monitoring pyta co minutę)
+### The `health` section (the monitoring asks every minute)
 
-| Identyfikator | Co sprawdza |
+| Identifier | What it checks |
 | --- | --- |
-| `db` | Zapytanie kontrolne przez Doctrine, z pomiarem czasu. Brak bazy to `fail`, nie wyjątek. |
-| `disk` | Prawo zapisu do `var/` i katalogu mediów, rozmiar instalacji, zajętość względem podanego limitu konta. |
-| `smtp` | Połączenie z serwerem poczty (TCP, powitanie 220, EHLO). To test POŁĄCZENIA, nie doręczenia. |
-| `messenger` | Zaległości w kolejkach doctrine: wiek najstarszej wiadomości i liczba nieudanych. |
-| `app_cache` | Zapis i odczyt klucza kontrolnego w puli pamięci podręcznej aplikacji. |
-| `checkout` | Czy w każdym włączonym kanale da się kupić: metoda płatności, metoda dostawy, strefa. |
-| `scheduled_tasks` | Świeżość znacznika bicia serca, czyli czy cron w ogóle działa. |
-| `elasticsearch` | Stan klastra. Opcjonalny: bez podanego adresu check w ogóle nie powstaje. |
+| `db` | A probe query through Doctrine, timed. No database means `fail`, not an exception. |
+| `disk` | Write permission to `var/` and the media directory, installation size, usage against the account quota you provided. |
+| `smtp` | Connection to the mail server (TCP, 220 greeting, EHLO). This tests the CONNECTION, not delivery. |
+| `messenger` | Backlog in the doctrine queues: age of the oldest message and the number of failed ones. |
+| `app_cache` | Writing and reading a probe key in the application cache pool. |
+| `checkout` | Whether a purchase is possible in every enabled channel: payment method, shipping method, zone. |
+| `scheduled_tasks` | Freshness of the heartbeat marker, that is, whether cron runs at all. |
+| `elasticsearch` | Cluster state. Optional: without a configured address the check is not created at all. |
 
-### Sekcja `security` (monitoring pyta raz na dobę)
+### The `security` section (the monitoring asks once a day)
 
 `admin_count`, `admin_login`, `app_env`, `debug_display`, `https`,
 `php_version`, `config_perms`, `dir_perms`, `app_secret`, `dev_packages`,
 `pending_updates`.
 
-To podstawowa higiena, a nie audyt. Nie skanujemy złośliwego kodu, nie liczymy
-sum kontrolnych plików platformy i nie robimy kopii zapasowych.
+This is basic hygiene, not an audit. We do not scan for malicious code, we do
+not compute checksums of the platform files and we do not make backups.
 
-### Czego świadomie nie robimy
+### What we deliberately do not do
 
-- Nie wysyłamy listy pakietów z wersjami. `site.updates` to same liczby, bo
-  spis „co i w jakiej wersji" jest gotową mapą dziur dla atakującego. Nazwy
-  jadą wyłącznie tam, gdzie są istotą funkcji: w historii zmian wersji oraz
-  jako skład WŁĄCZONYCH bundli (`signals.activePlugins`, bez wersji). Ten
-  drugi wyjątek jest świadomy i ma cenę: kto zdobędzie sekretny adres
-  kontrolny, zobaczy listę bundli. Bez nazw zdarzenie o zdjętym rozszerzeniu
-  brzmiałoby „coś się zmieniło", a wtedy nie da się na nie zareagować.
-- Nie udajemy automatycznych aktualizacji. Sylius ich nie ma, więc pole
-  `signals.autoUpdates` w ogóle nie jedzie, zamiast wieźć wartość, która
-  znaczyłaby „sprawdzone".
-- Nie wysyłamy loginów. Zamiast nich jedzie liczba kont administracyjnych
-  i jednokierunkowy odcisk ich zbioru, solony sekretem instalacji. Panel
-  wykrywa ZMIANĘ składu, nie tożsamość.
-- Nie zaglądamy w dane sprzedażowe. Sprawdzenie `checkout` patrzy wyłącznie
-  na konfigurację kanału, nigdy na zamówienia ani obroty.
-- Nie zgadujemy liczb, których nie znamy. Dopóki nikt nie uruchomił
-  `calmfox:watch:updates`, pole `updates` nie jedzie w ogóle. Zero znaczyłoby
-  „sprawdzone, nie ma czego aktualizować", a to byłaby nieprawda.
+- We do not send a list of packages with versions. `site.updates` is numbers
+  only, because an inventory of "what, and in which version" is a ready-made
+  map of holes for an attacker. Names travel only where they are the essence
+  of the feature: in the version change history and as the set of ENABLED
+  bundles (`signals.activePlugins`, without versions). That second exception
+  is deliberate and has a price: whoever obtains the secret health endpoint
+  will see the list of bundles. Without names, an event about a removed
+  extension would read "something changed", and you cannot react to that.
+- We do not pretend there are automatic updates. Sylius has none, so the
+  `signals.autoUpdates` field is not sent at all, instead of carrying a value
+  that would mean "checked".
+- We do not send logins. What travels instead is the number of admin accounts
+  and a one-way fingerprint of their set, salted with the installation
+  secret. The Calmfox Watch panel detects a CHANGE in the set, not
+  identities.
+- We do not look into sales data. The `checkout` check looks only at the
+  channel configuration, never at orders or revenue.
+- We do not guess numbers we do not know. Until somebody has run
+  `calmfox:watch:updates`, the `updates` field is not sent at all. Zero would
+  mean "checked, nothing to update", and that would be untrue.
 
-## Własne sprawdzenia
+## Custom checks
 
-Usługi, o których wie tylko właściciel sklepu (broker kolejek, integracja
-z magazynem, demon synchronizacji cen), dopina się własną klasą:
+Services only the store owner knows about (a queue broker, a warehouse
+integration, a price synchronisation daemon) are attached with a class of
+your own:
 
 ```php
 namespace App\Monitoring;
@@ -342,16 +362,16 @@ final class WarehouseCheck implements HealthCheckInterface
         $ms = (int) round((microtime(true) - $start) * 1000);
 
         if (!\is_resource($socket)) {
-            return CheckResult::fail('warehouse', 'Integracja z magazynem', 'Usługa nie przyjmuje połączeń.', $ms);
+            return CheckResult::fail('warehouse', 'Warehouse integration', 'The service is not accepting connections.', $ms);
         }
         fclose($socket);
 
-        return CheckResult::ok('warehouse', 'Integracja z magazynem', null, $ms);
+        return CheckResult::ok('warehouse', 'Warehouse integration', null, $ms);
     }
 }
 ```
 
-Przy włączonym `autoconfigure` to wszystko. Bez niego dopisz tag:
+With `autoconfigure` enabled, that is all. Without it, add the tag:
 
 ```yaml
 services:
@@ -359,83 +379,93 @@ services:
         tags: [{ name: calmfox_watch.health_check, priority: 0 }]
 ```
 
-Dwie zasady, obie z kontraktu:
+Two rules, both from the contract:
 
-1. Zwróć `null`, gdy sprawdzenie nie dotyczy tej instalacji. Nie wysyłamy
-   „ok" o czymś, czego nie ma.
-2. Trzymaj krótki, twardy limit czasu. Adres kontrolny odpowiada co minutę
-   i nie może zamulić sklepu.
+1. Return `null` when the check does not apply to this installation. We do
+   not send "ok" about something that is not there.
+2. Keep a short, hard timeout. The health endpoint answers every minute and
+   must not slow the store down.
 
-Identyfikator spoza katalogu parametrów trafi do panelu z etykietą z payloadu
-i notką „usługa dopięta własnym rozszerzeniem".
+An identifier from outside the parameter catalogue reaches the Calmfox Watch
+panel with the label from the payload and the note "service attached by a
+custom extension".
 
-## Historia zmian wersji
+## Version change history
 
-Sylius nie ma haka aktualizacji: wdrożenie robi Composer, zwykle z zupełnie
-innej maszyny. Dlatego pakiet porównuje migawki `vendor/composer/installed.php`
-(plus wersję PHP) przy każdym budowaniu sekcji `security`, czyli najwyżej co
-dziesięć minut, oraz przy `calmfox:watch:updates`.
+Sylius has no update hook: deployment is done by Composer, usually from a
+completely different machine. That is why the package compares snapshots of
+`vendor/composer/installed.php` (plus the PHP version) every time the
+`security` section is built, which is at most every ten minutes, and on
+`calmfox:watch:updates`.
 
-Konsekwencje, które trzeba znać:
+Consequences worth knowing:
 
-- Znacznik `at` to **czas wykrycia** zmiany, a nie czas wdrożenia. Zwykle
-  różnią się o minuty, przy sklepie bez ruchu może być więcej. Do zdania
-  „awaria zaczęła się po aktualizacji pakietu X" to wystarcza, do rozliczania
-  wdrożeń co do sekundy nie.
-- Historia zaczyna się od instalacji pakietu. Wcześniejszych zmian nie da się
-  odtworzyć, bo nie ma z czego.
-- Zmiana `sylius/sylius` albo PHP zapisuje się jako `core`, pozostałe pakiety
-  jako `plugin`. Bufor to 200 wpisów.
-- Przy wdrożeniach z katalogiem na wydanie historia wymaga współdzielonego
-  katalogu stanu (patrz wyżej). Bez tego każde wdrożenie zaczyna ją od nowa.
+- The `at` timestamp is the **time the change was detected**, not the time of
+  deployment. They usually differ by minutes; for a store with no traffic it
+  can be more. For the sentence "the outage started after package X was
+  updated" that is enough; for accounting for deployments to the second it
+  is not.
+- The history starts when the package is installed. Earlier changes cannot be
+  reconstructed, because there is nothing to reconstruct them from.
+- A change of `sylius/sylius` or PHP is recorded as `core`, other packages as
+  `plugin`. The buffer holds 200 entries.
+- With release-directory deployments the history requires a shared state
+  directory (see above). Without it every deployment starts it over.
 
-## Prywatność
+## Privacy
 
-Do Calmfox jedzie: domena sklepu, podany adres e-mail (tylko przy zakładaniu
-konta) i dane diagnostyczne opisane wyżej: statusy sprawdzeń z opisami, wersje
-platformy i PHP, liczby zaległych aktualizacji, liczba i odcisk kont
-administracyjnych oraz historia zmian wersji pakietów. Żadnych treści sklepu,
-zamówień, klientów, loginów ani haseł.
+What goes to Calmfox: the store domain, the e-mail address you provided (only
+when creating an account) and the diagnostic data described above: check
+statuses with descriptions, platform and PHP versions, counts of pending
+updates, the number and fingerprint of admin accounts, and the package
+version change history. No store content, orders, customers, logins or
+passwords.
 
-## Testy
+## Tests
 
-Rdzeń pakietu (`src/Core`) jest wolny od Symfony i Syliusa: to zwykłe klasy PHP.
-Dzięki temu kontrakt z panelem da się przetestować bez kontenera i bez bazy.
+The package core (`src/Core`) is free of Symfony and Sylius: these are plain
+PHP classes. Thanks to that, the contract with the Calmfox Watch panel can be
+tested without a container and without a database. The suite runs standalone:
 
 ```bash
+composer install
 vendor/bin/phpunit
 ```
 
-Test zgodności podpisu z panelem sięga po kod huba, który mieszka w osobnym
-repozytorium — bez niego sam się pomija. Żeby go uruchomić, wskaż katalog huba:
+The only exception is the test of signature compatibility with the
+verification on the Calmfox Watch server side. It reaches for the server
+code, which is not public, so without it the test skips itself; the remaining
+tests verify the signature with the package's own code. If you have access to
+the server code, point to its directory with the `CALMFOX_HUB_DIR` variable:
 
 ```bash
-CALMFOX_HUB_DIR=~/Works/work_tmp/foxpatrzy vendor/bin/phpunit
+CALMFOX_HUB_DIR=/path/to/calmfox-watch-server vendor/bin/phpunit
 ```
 
-Testy pilnują między innymi: agregacji `ok`/`warn`/`fail`, odrzucenia złego
-klucza, ważności poprzedniego sekretu w oknie rotacji i jej wygaśnięcia,
-zgodności podpisu z weryfikacją po stronie panelu, pominięcia pola `updates`
-przy braku danych, porównywania migawek wersji oraz rozbioru `MAILER_DSN`.
+Among other things, the tests guard: the `ok`/`warn`/`fail` aggregation,
+rejection of a wrong key, validity of the previous secret within the rotation
+window and its expiry, signature compatibility with the verification on the
+Calmfox Watch side, omission of the `updates` field when there is no data,
+comparison of version snapshots and parsing of `MAILER_DSN`.
 
-Przykładowe odpowiedzi obu sekcji leżą w `docs/sample-health.json`
-i `docs/sample-security.json`. Powstają z tego samego kodu, który odpowiada
-monitoringowi, a test pilnuje, żeby się nie rozjechały. Regeneracja po
-świadomej zmianie kontraktu:
+Sample responses of both sections are in `docs/sample-health.json` and
+`docs/sample-security.json`. They are produced by the same code that answers
+the monitoring, and a test makes sure they do not drift apart. To regenerate
+them after a deliberate change of the contract:
 
 ```bash
 CALMFOX_WRITE_SAMPLES=1 vendor/bin/phpunit --filter SamplePayloads
 ```
 
-## Granice ochrony
+## Limits of protection
 
-Odpowiedź podpisujemy kluczem instalacji (HMAC-SHA256 nad znacznikiem
-jednorazowym, czasem wygenerowania i dokładnymi bajtami treści). To odcina
-tanie ataki: podstawiony plik statyczny, odpowiedź z pamięci podręcznej,
-powtórkę sprzed przejęcia sklepu. Kto ma pełną kontrolę nad serwerem, ma też
-sekret i potrafi podpisać kłamstwo. Podpis nie zastępuje odzyskiwania serwera
-i tak o nim mówimy.
+We sign the response with the installation key (HMAC-SHA256 over the nonce,
+the generation time and the exact bytes of the body). That cuts off the cheap
+attacks: a substituted static file, a response served from a cache, a replay
+from before the store was taken over. Whoever has full control of the server
+also has the secret and can sign a lie. The signature does not replace
+recovering the server, and that is how we talk about it.
 
-## Licencja
+## License
 
-MIT.
+MIT, see [LICENSE](LICENSE).

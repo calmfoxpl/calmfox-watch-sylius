@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Calmfox\WatchBundle\Core;
 
 /**
- * Budowa odpowiedzi adresu kontrolnego w kształcie z WTYCZKI.md. Wydzielone
+ * Budowa odpowiedzi adresu kontrolnego w kształcie z kontraktu wtyczek. Wydzielone
  * z kontrolera, bo to jedyne miejsce, które decyduje o kontrakcie z hubem:
  * testy trzymają je za rękę, a próbki w docs/ powstają z tego samego kodu,
  * który odpowiada monitoringowi.

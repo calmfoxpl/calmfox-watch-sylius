@@ -10,7 +10,7 @@ use Calmfox\WatchBundle\Core\SecretManager;
 /**
  * Skład WŁĄCZONYCH rozszerzeń sklepu, czyli bundli zarejestrowanych w
  * config/bundles.php. To jest sylisowy odpowiednik listy aktywnych wtyczek
- * WordPressa (WTYCZKI.md, sekcja 2): pakiet leżący w vendorze, ale zdjęty
+ * WordPressa: pakiet leżący w vendorze, ale zdjęty
  * z bundles.php, nie działa i nie ma prawa liczyć się jako włączony.
  *
  * Sygnały jadą w sekcji `health`, odpytywanej co minutę, a nie w `security`
