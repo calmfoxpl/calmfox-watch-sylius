@@ -11,6 +11,23 @@ The model is "pull": the package sends nothing on its own apart from
 registration, pairing and disconnecting. Everything else is an answer to a
 question asked by the monitoring.
 
+## About Calmfox Watch
+
+[Calmfox Watch](https://watch.calmfox.net) is a website monitoring service. It
+checks availability, security, software updates, content and performance from
+the outside and rolls the results into a single site health score from 0 to
+100, with an explanation of every point lost and what to do about it. It also
+watches domain and TLS certificate expiry, DNS changes and broken links, and
+sends an alert once a problem is confirmed.
+
+On its own, Calmfox Watch sees the store the way a visitor does. This
+package adds the view from inside Sylius: the state of the services behind the
+store, configuration hygiene and a history of package changes. No admin
+passwords are shared with the service.
+
+- Calmfox Watch: <https://watch.calmfox.net>
+- Packagist: <https://packagist.org/packages/calmfox/watch-sylius>
+
 ## Requirements
 
 | Component | Range |

@@ -10,6 +10,22 @@ kształt odpowiedzi, ten sam podpis, ta sama droga parowania.
 Model jest „pull": pakiet nie wysyła nic z siebie poza rejestracją, parowaniem
 i rozłączeniem. Reszta to odpowiedzi na pytania monitoringu.
 
+## O Calmfox Watch
+
+[Calmfox Watch](https://watch.calmfox.net) to usługa monitoringu stron. Z
+zewnątrz sprawdza dostępność, bezpieczeństwo, aktualność oprogramowania,
+działanie treści i szybkość, a wyniki łączy w jedną ocenę kondycji strony od 0
+do 100, z wyjaśnieniem każdego straconego punktu i zaleceniem, co zrobić.
+Pilnuje też ważności domeny i certyfikatu, zmian w DNS i niedziałających
+odnośników, a po potwierdzeniu problemu wysyła powiadomienie.
+
+Sam Calmfox Watch widzi sklep tak jak klient. Ten pakiet dodaje widok z
+wnętrza Syliusa: stan usług za sklepem, higienę konfiguracji i historię zmian
+pakietów. Usługa nie dostaje żadnych haseł do panelu administracyjnego.
+
+- Calmfox Watch: <https://watch.calmfox.net>
+- Packagist: <https://packagist.org/packages/calmfox/watch-sylius>
+
 ## Wymagania
 
 | Składnik | Zakres |

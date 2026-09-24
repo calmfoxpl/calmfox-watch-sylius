@@ -1,6 +1,6 @@
 {
     "name": "calmfox/watch-sylius",
-    "description": "Monitoring wnętrza sklepu Sylius dla Calmfox Watch: sekretny adres kontrolny ze stanem usług (baza, dysk, poczta, kolejki, pamięć podręczna, ścieżka zakupowa, zadania cykliczne), podstawowa higiena bezpieczeństwa i historia zmian wersji pakietów.",
+    "description": "Sylius integration for Calmfox Watch (https://watch.calmfox.net), a website monitoring service that scores site health from 0 to 100 (availability, security, updates, content, performance). Adds a secret health endpoint with service status (database, disk, mail, queues, cache, checkout path, scheduled jobs), basic security hygiene checks and a package version history.",
     "type": "symfony-bundle",
     "keywords": ["sylius", "sylius-plugin", "monitoring", "health", "uptime", "security"],
     "license": "MIT",
@@ -37,8 +37,8 @@
         "phpunit/phpunit": "^10.5 || ^11.0 || ^12.0 || ^13.0"
     },
     "suggest": {
-        "symfony/messenger": "Sprawdzenie zaległości w kolejkach (transport doctrine).",
-        "symfony/process": "Wymagane przez polecenie calmfox:watch:updates (liczenie zaległych aktualizacji Composera)."
+        "symfony/messenger": "Enables the queue backlog check (doctrine transport).",
+        "symfony/process": "Required by the calmfox:watch:updates command (counts pending Composer updates)."
     },
     "autoload": {
         "psr-4": {
