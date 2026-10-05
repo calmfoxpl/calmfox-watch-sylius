@@ -158,8 +158,8 @@ from the server itself.
 
 ### 5. Connecting to the Calmfox Watch panel
 
-The shortest way: the store's Sylius admin, the **Calmfox Watch** item in the
-main menu, the "Connect through watch.calmfox.net" button. It takes you to
+The shortest way: the store's Sylius admin, **Calmfox services → Calmfox Watch**
+in the main menu, the "Connect through watch.calmfox.net" button. It takes you to
 the Calmfox Watch panel (sign in or create an account, pick an organisation)
 and then returns to the store with the installation key and connects the
 store without you retyping anything. The store does not have to exist in the
@@ -238,10 +238,13 @@ it is called in your version (`bin/console debug:twig`, or the
 directory) and set `calmfox_watch.admin_layout`.
 
 **Main menu.** The "Calmfox Watch" item is attached through the
-`sylius.menu.admin.main` event to the MAIN MENU, right below the dashboard,
-and not under "Configuration": an outage should be visible from every screen
-of the store. If your version builds the menu differently, the item will not
-appear, and the screen still works under `/admin/calmfox-watch`.
+`sylius.menu.admin.main` event to the "Calmfox services" group of the main
+menu, right after "Configuration". Every Calmfox plugin puts its service pages
+(accounts, keys, connections, monitoring) in that group, while settings that
+belong to one shipping or payment method stay with the method. The dashboard
+tile below keeps an outage visible without opening the menu. If your version
+builds the menu differently, the item will not appear, and the screen still
+works under `/admin/calmfox-watch`.
 
 **Dashboard tile.** The Sylius admin dashboard gets a health summary: section
 status, check counts and at most three of the most urgent problems (failures

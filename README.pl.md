@@ -150,7 +150,7 @@ z samego serwera.
 
 ### 5. Połączenie z panelem
 
-Najkrócej: panel administracyjny sklepu, pozycja **Calmfox Watch** w menu głównym,
+Najkrócej: panel administracyjny sklepu, **Usługi Calmfox → Calmfox Watch** w menu głównym,
 przycisk „Połącz przez watch.calmfox.net". Przeniesie Cię do panelu (logowanie
 albo założenie konta, wybór organizacji), a potem wróci do sklepu z kluczem
 instalacyjnym i połączy sklep bez przepisywania czegokolwiek. Sklep nie musi
@@ -226,10 +226,13 @@ w Twojej wersji (`bin/console debug:twig`, albo katalog
 i ustaw `calmfox_watch.admin_layout`.
 
 **Menu główne.** Pozycja „Calmfox Watch" dopina się przez zdarzenie
-`sylius.menu.admin.main` do MENU GŁÓWNEGO, zaraz pod pulpitem, a nie pod
-„Konfigurację": awaria ma być widoczna z każdego ekranu sklepu. Jeżeli Twoja
-wersja buduje menu inaczej, pozycja się nie pojawi, a ekran nadal działa pod
-adresem `/admin/calmfox-watch`.
+`sylius.menu.admin.main` do grupy „Usługi Calmfox" w menu głównym, zaraz za
+„Konfiguracją". Każda wtyczka Calmfox wkłada tam strony swoich usług (konta,
+klucze, połączenia, monitoring), a ustawienia jednej metody dostawy albo
+płatności zostają przy tej metodzie. Awarię i tak widać bez otwierania menu,
+bo pokazuje ją kafelek na pulpicie (niżej). Jeżeli Twoja wersja buduje menu
+inaczej, pozycja się nie pojawi, a ekran nadal działa pod adresem
+`/admin/calmfox-watch`.
 
 **Kafelek na pulpicie.** Pulpit panelu dostaje skrót kondycji: status sekcji,
 liczby sprawdzeń i najwyżej trzy najpilniejsze problemy (awarie przed

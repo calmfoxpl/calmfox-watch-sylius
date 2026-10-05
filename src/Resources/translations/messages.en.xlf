@@ -3,6 +3,7 @@
     <file source-language="pl" target-language="en" datatype="plaintext" original="calmfox-watch">
         <body>
             <trans-unit id="cfx.menu"><source>calmfox_watch.menu.admin</source><target>Calmfox Watch</target></trans-unit>
+            <trans-unit id="cfx.menu.section"><source>calmfox.menu.section</source><target>Calmfox services</target></trans-unit>
             <trans-unit id="cfx.version"><source>calmfox_watch.admin.version</source><target>version %version%</target></trans-unit>
             <trans-unit id="cfx.lead"><source>calmfox_watch.admin.lead</source><target>Store internals monitoring: service availability (database, mail, disk, queues, cache), checkout prerequisites, basic security hygiene and package version history. Results are available in the Calmfox Watch panel.</target></trans-unit>
             <trans-unit id="cfx.loopback"><source>calmfox_watch.admin.loopback_warning</source><target>A request made from this server does not reach the health endpoint (%error%). If pairing fails, review the access rules in security.yaml and the firewall.</target></trans-unit>

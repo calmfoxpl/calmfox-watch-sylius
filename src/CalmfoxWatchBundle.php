@@ -16,7 +16,7 @@ final class CalmfoxWatchBundle extends Bundle
      * miejscu wystarczy. Świadomie nie ma pola „version" w composer.json:
      * Composer wylicza je z tagu, a paczka do ręcznego wgrania nie ma tagu.
      */
-    public const VERSION = '1.3.1';
+    public const VERSION = '1.4.0';
 
     public function build(ContainerBuilder $container): void
     {

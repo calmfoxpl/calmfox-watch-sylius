@@ -3,6 +3,7 @@
     <file source-language="pl" target-language="pl" datatype="plaintext" original="calmfox-watch">
         <body>
             <trans-unit id="cfx.menu"><source>calmfox_watch.menu.admin</source><target>Calmfox Watch</target></trans-unit>
+            <trans-unit id="cfx.menu.section"><source>calmfox.menu.section</source><target>Usługi Calmfox</target></trans-unit>
             <trans-unit id="cfx.version"><source>calmfox_watch.admin.version</source><target>wersja %version%</target></trans-unit>
             <trans-unit id="cfx.lead"><source>calmfox_watch.admin.lead</source><target>Monitoring wnętrza sklepu: dostępność usług (baza danych, poczta, dysk, kolejki, pamięć podręczna), warunki złożenia zamówienia, podstawowe zasady bezpieczeństwa i historia zmian wersji. Wyniki znajdziesz w panelu Calmfox Watch.</target></trans-unit>
             <trans-unit id="cfx.loopback"><source>calmfox_watch.admin.loopback_warning</source><target>Sprawdzenie wykonane z serwera nie dociera do adresu kontrolnego (%error%). Jeżeli połączenie się nie powiedzie, sprawdź reguły dostępu w security.yaml oraz zaporę sieciową.</target></trans-unit>
