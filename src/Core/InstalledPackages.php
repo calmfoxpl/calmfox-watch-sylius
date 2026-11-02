@@ -16,14 +16,8 @@ final class InstalledPackages
      */
     public static function load(string $vendorDir): array
     {
-        $file = rtrim($vendorDir, '/').'/composer/installed.php';
-        if (!is_file($file)) {
-            return [];
-        }
-
-        /** @var mixed $data */
-        $data = @include $file;
-        if (!\is_array($data) || !\is_array($data['versions'] ?? null)) {
+        $data = self::read($vendorDir);
+        if (null === $data || !\is_array($data['versions'] ?? null)) {
             return [];
         }
 
@@ -41,6 +35,32 @@ final class InstalledPackages
         ksort($out);
 
         return $out;
+    }
+
+    /**
+     * Spis komponentów do sekcji `security`, patrz {@see Inventory}.
+     *
+     * @return list<array{type: string, name: string, version: string}>|null
+     */
+    public static function inventory(string $vendorDir): ?array
+    {
+        $data = self::read($vendorDir);
+
+        return null === $data ? null : Inventory::fromInstalled($data);
+    }
+
+    /** @return array<mixed>|null zawartość installed.php albo null, gdy nie ma jej jak odczytać */
+    private static function read(string $vendorDir): ?array
+    {
+        $file = rtrim($vendorDir, '/').'/composer/installed.php';
+        if (!is_file($file)) {
+            return null;
+        }
+
+        /** @var mixed $data */
+        $data = @include $file;
+
+        return \is_array($data) ? $data : null;
     }
 
     /**

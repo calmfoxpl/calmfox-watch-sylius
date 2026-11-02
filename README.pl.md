@@ -330,13 +330,15 @@ sum kontrolnych plików platformy i nie robimy kopii zapasowych.
 
 ### Czego świadomie nie robimy
 
-- Nie wysyłamy listy pakietów z wersjami. `site.updates` to same liczby, bo
-  spis „co i w jakiej wersji" jest gotową mapą dziur dla atakującego. Nazwy
-  jadą wyłącznie tam, gdzie są istotą funkcji: w historii zmian wersji oraz
-  jako skład WŁĄCZONYCH bundli (`signals.activePlugins`, bez wersji). Ten
-  drugi wyjątek jest świadomy i ma cenę: kto zdobędzie sekretny adres
-  kontrolny, zobaczy listę bundli. Bez nazw zdarzenie o zdjętym rozszerzeniu
-  brzmiałoby „coś się zmieniło", a wtedy nie da się na nie zareagować.
+- Wersje pakietów jadą wyłącznie w sekcji `security`: w historii zmian oraz
+  w spisie komponentów (`inventory`), z którego panel wykrywa znane podatności.
+  W sekcji `health` `site.updates` to same liczby, a skład WŁĄCZONYCH bundli
+  (`signals.activePlugins`) jedzie bez wersji. Spis „co i w jakiej wersji" jest
+  mapą ataku i to świadoma cena: kto zdobędzie sekretny adres kontrolny, zobaczy
+  go razem z listą bundli. Dlatego panel przyjmuje spis tylko z podpisanej
+  odpowiedzi, nie pokazuje go na stronie statusu i nie odsyła do pakietu. Bez
+  nazw zdarzenie o zdjętym rozszerzeniu brzmiałoby „coś się zmieniło", a wtedy
+  nie da się na nie zareagować.
 - Nie udajemy automatycznych aktualizacji. Sylius ich nie ma, więc pole
   `signals.autoUpdates` w ogóle nie jedzie, zamiast wieźć wartość, która
   znaczyłaby „sprawdzone".
@@ -421,7 +423,8 @@ Konsekwencje, które trzeba znać:
 Do Calmfox jedzie: domena sklepu, podany adres e-mail (tylko przy zakładaniu
 konta) i dane diagnostyczne opisane wyżej: statusy sprawdzeń z opisami, wersje
 platformy i PHP, liczby zaległych aktualizacji, liczba i odcisk kont
-administracyjnych oraz historia zmian wersji pakietów. Żadnych treści sklepu,
+administracyjnych, historia zmian wersji pakietów oraz spis zainstalowanych pakietów
+z wersjami (do wykrywania znanych podatności). Żadnych treści sklepu,
 zamówień, klientów, loginów ani haseł.
 
 ## Testy

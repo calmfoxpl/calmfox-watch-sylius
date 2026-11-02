@@ -7,6 +7,7 @@ namespace Calmfox\WatchBundle\Tests\Support;
 use Calmfox\WatchBundle\Core\AdminFingerprint;
 use Calmfox\WatchBundle\Core\CheckNormalizer;
 use Calmfox\WatchBundle\Core\CheckResult;
+use Calmfox\WatchBundle\Core\Inventory;
 use Calmfox\WatchBundle\Core\PayloadBuilder;
 
 /**
@@ -113,6 +114,14 @@ final class SamplePayloads
                 'mode' => 'manual',
                 'by' => null,
             ],
-        ]);
+        ], Inventory::fromInstalled([
+            'root' => ['name' => 'klient/sklep'],
+            'versions' => [
+                'klient/sklep' => ['pretty_version' => 'dev-main', 'version' => 'dev-main'],
+                'sylius/paypal-plugin' => ['pretty_version' => '2.0.2', 'version' => '2.0.2.0'],
+                'sylius/sylius' => ['pretty_version' => 'v1.13.2', 'version' => '1.13.2.0'],
+                'symfony/http-foundation' => ['pretty_version' => 'v7.4.16', 'version' => '7.4.16.0'],
+            ],
+        ]));
     }
 }

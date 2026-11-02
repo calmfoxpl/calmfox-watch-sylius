@@ -1,5 +1,5 @@
 {
-    "schema": 1,
+    "schema": 2,
     "plugin": "1.0.0",
     "status": "warn",
     "checks": [
@@ -130,6 +130,23 @@
             "at": "2026-06-02T04:11:00+00:00",
             "mode": "manual",
             "by": null
+        }
+    ],
+    "inventory": [
+        {
+            "type": "package",
+            "name": "sylius/paypal-plugin",
+            "version": "2.0.2"
+        },
+        {
+            "type": "package",
+            "name": "sylius/sylius",
+            "version": "v1.13.2"
+        },
+        {
+            "type": "package",
+            "name": "symfony/http-foundation",
+            "version": "v7.4.16"
         }
     ]
 }

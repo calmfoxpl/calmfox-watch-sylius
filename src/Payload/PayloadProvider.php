@@ -61,7 +61,12 @@ final class PayloadProvider
             // na uzgodnienie migawki wersji.
             $this->history->reconcile();
             $result = $this->securityChecks->run();
-            $payload = PayloadBuilder::security(CalmfoxWatchBundle::VERSION, $result['checks'], $this->history->all());
+            $payload = PayloadBuilder::security(
+                CalmfoxWatchBundle::VERSION,
+                $result['checks'],
+                $this->history->all(),
+                InstalledPackages::inventory($this->vendorDir)
+            );
             $this->cache->set($key, $payload, self::SECURITY_TTL);
 
             return $payload;

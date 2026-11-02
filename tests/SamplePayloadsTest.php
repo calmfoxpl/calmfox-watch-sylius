@@ -46,6 +46,13 @@ final class SamplePayloadsTest extends TestCase
 
         self::assertSame('warn', $payload['status']);
         self::assertSame(['admin_count', 'admin_login', 'app_env', 'debug_display', 'https', 'php_version', 'config_perms', 'dir_perms', 'app_secret', 'dev_packages', 'pending_updates'], array_column($payload['checks'], 'id'));
+        self::assertSame(2, $payload['schema'], 'Spis komponentów jedzie od schema 2.');
+        self::assertNotEmpty($payload['inventory']);
+        self::assertNotContains('klient/sklep', array_column($payload['inventory'], 'name'), 'Paczka główna to projekt klienta, nie komponent.');
+        foreach ($payload['inventory'] as $entry) {
+            self::assertMatchesRegularExpression('#^[a-z0-9][a-z0-9._-]{0,99}/[a-z0-9][a-z0-9._-]{0,99}$#', $entry['name'], 'Nazwa poza wzorcem huba wypada ze spisu.');
+            self::assertMatchesRegularExpression('/^[0-9A-Za-z][0-9A-Za-z.+_-]{0,63}$/', $entry['version'], 'Wersja poza wzorcem huba wypada ze spisu.');
+        }
         foreach ($payload['history'] as $entry) {
             self::assertContains($entry['kind'], ['core', 'plugin'], 'Na platformach composerowych „theme" nie występuje.');
         }

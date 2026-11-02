@@ -65,4 +65,16 @@ final class PayloadBuilderTest extends TestCase
         self::assertStringNotContainsString('sylius/', json_encode($payload, \JSON_THROW_ON_ERROR));
         self::assertArrayNotHasKey('history', $payload);
     }
+
+    public function testInventoryTravelsOnlyInSecurityAndOnlyWhenKnown(): void
+    {
+        $inventory = [['type' => 'package', 'name' => 'acme/lib', 'version' => '2.1.3']];
+        $with = PayloadBuilder::security('1.0.0', [], [], $inventory);
+        $without = PayloadBuilder::security('1.0.0', [], []);
+
+        self::assertSame(2, $with['schema']);
+        self::assertSame($inventory, $with['inventory']);
+        self::assertArrayNotHasKey('inventory', $without, 'Brak spisu to brak pola: pusta lista znaczyłaby „sprawdzone, nic nie ma".');
+        self::assertArrayNotHasKey('inventory', PayloadBuilder::health('1.0.0', [], PayloadBuilder::site('1.13.2', '8.3.14', '1.0.0')));
+    }
 }

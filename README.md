@@ -345,14 +345,16 @@ not compute checksums of the platform files and we do not make backups.
 
 ### What we deliberately do not do
 
-- We do not send a list of packages with versions. `site.updates` is numbers
-  only, because an inventory of "what, and in which version" is a ready-made
-  map of holes for an attacker. Names travel only where they are the essence
-  of the feature: in the version change history and as the set of ENABLED
-  bundles (`signals.activePlugins`, without versions). That second exception
-  is deliberate and has a price: whoever obtains the secret health endpoint
-  will see the list of bundles. Without names, an event about a removed
-  extension would read "something changed", and you cannot react to that.
+- Package versions travel only in the `security` section: in the version change
+  history and in the component inventory (`inventory`), which the panel uses to
+  detect known vulnerabilities. In the `health` section `site.updates` is numbers
+  only and the set of ENABLED bundles (`signals.activePlugins`) goes without
+  versions. An inventory of "what, and in which version" is a map for an attacker,
+  and that is a deliberate price: whoever obtains the secret health endpoint will
+  see it along with the list of bundles. That is why the panel accepts the inventory
+  only from a signed response, does not show it on the status page and does not send
+  it back to the package. Without names, an event about a removed extension would
+  read "something changed", and then there is no way to react to it.
 - We do not pretend there are automatic updates. Sylius has none, so the
   `signals.autoUpdates` field is not sent at all, instead of carrying a value
   that would mean "checked".
@@ -442,8 +444,9 @@ Consequences worth knowing:
 What goes to Calmfox: the store domain, the e-mail address you provided (only
 when creating an account) and the diagnostic data described above: check
 statuses with descriptions, platform and PHP versions, counts of pending
-updates, the number and fingerprint of admin accounts, and the package
-version change history. No store content, orders, customers, logins or
+updates, the number and fingerprint of admin accounts, the package version
+change history and the inventory of installed packages with versions (used to
+detect known vulnerabilities). No store content, orders, customers, logins or
 passwords.
 
 ## Tests

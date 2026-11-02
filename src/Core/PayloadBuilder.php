@@ -14,6 +14,9 @@ final class PayloadBuilder
 {
     public const SCHEMA = 1;
 
+    /** Od schema 2 sekcja `security` może nieść spis komponentów (`inventory`). */
+    public const SECURITY_SCHEMA = 2;
+
     /**
      * @param list<array<string, mixed>>        $checks
      * @param array<string, mixed>              $site
@@ -40,18 +43,24 @@ final class PayloadBuilder
     /**
      * @param list<array<string, mixed>> $checks
      * @param list<array<string, mixed>> $history
+     * @param list<array<string, string>>|null $inventory null = bez pola: panel powie „brak spisu"
      *
      * @return array<string, mixed>
      */
-    public static function security(string $pluginVersion, array $checks, array $history): array
+    public static function security(string $pluginVersion, array $checks, array $history, ?array $inventory = null): array
     {
-        return [
-            'schema' => self::SCHEMA,
+        $payload = [
+            'schema' => self::SECURITY_SCHEMA,
             'plugin' => $pluginVersion,
             'status' => CheckNormalizer::aggregate($checks),
             'checks' => $checks,
             'history' => $history,
         ];
+        if (null !== $inventory) {
+            $payload['inventory'] = $inventory;
+        }
+
+        return $payload;
     }
 
     /**
